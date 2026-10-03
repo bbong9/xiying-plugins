@@ -139,7 +139,7 @@ fn sync_media_info(params: Value) -> Result<Value, PluginRpcError> {
             "bodyBase64": ""
         }));
     }
-    let body = BASE64.decode(body_base64).map_err(|_| PluginRpcError {
+    let body = BASE64.decode(&body_base64).map_err(|_| PluginRpcError {
         code: "EMBY_ROUTE_INVALID_REQUEST".to_owned(),
         message: "Emby route body is not valid base64".to_owned(),
     })?;
@@ -181,7 +181,7 @@ fn sync_media_info(params: Value) -> Result<Value, PluginRpcError> {
     Ok(json!({
         "statusCode": 200,
         "headers": {"content-type": "application/json; charset=utf-8"},
-        "bodyBase64": "",
+        "bodyBase64": body_base64,
         "mediaInfoImport": operation
     }))
 }
@@ -829,7 +829,7 @@ mod tests {
         .expect("restore bundle should be accepted");
 
         assert_eq!(result["statusCode"], 200);
-        assert_eq!(result["bodyBase64"], "");
+        assert_eq!(result["bodyBase64"], body_base64);
         assert_eq!(result["mediaInfoImport"]["target"]["path"], "/media.strm");
         assert_eq!(result["mediaInfoImport"]["media"]["container"], "mkv");
         assert_eq!(result["mediaInfoImport"]["chapters"][0]["chapterIndex"], 0);
