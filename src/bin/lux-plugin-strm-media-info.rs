@@ -122,8 +122,19 @@ fn sync_media_info(params: Value) -> Result<Value, PluginRpcError> {
         })?;
     let body_base64 = request.body_base64;
     if body_base64.is_empty() {
+        let is_compatibility_probe = request
+            .query
+            .as_deref()
+            .and_then(|query| {
+                reqwest::Url::parse(&format!("http://lux.invalid/?{query}"))
+                    .ok()?
+                    .query_pairs()
+                    .find(|(key, _)| key.eq_ignore_ascii_case("path"))
+                    .map(|(_, value)| value == "/__mediatidy_probe_sync_media_info__.strm")
+            })
+            .unwrap_or(false);
         return Ok(json!({
-            "statusCode": 400,
+            "statusCode": if is_compatibility_probe { 400 } else { 200 },
             "headers": {},
             "bodyBase64": ""
         }));
@@ -794,7 +805,7 @@ mod tests {
             json!({
                 "method": "POST",
                 "path": "/Items/SyncMediaInfo",
-                "query": "Path=%2Fprobe.strm",
+                "query": "Path=%2F__mediatidy_probe_sync_media_info__.strm",
                 "headers": {},
                 "bodyBase64": ""
             }),
@@ -804,6 +815,21 @@ mod tests {
 
         assert_eq!(result["statusCode"], 400);
         assert_eq!(result["headers"], json!({}));
+        assert_eq!(result["bodyBase64"], "");
+    }
+
+    #[test]
+    fn emby_sync_media_info_accepts_an_empty_real_media_query() {
+        let result = super::sync_media_info(json!({
+            "method": "POST",
+            "path": "/Items/SyncMediaInfo",
+            "query": "Path=%2Fmedia%2Fmovie.strm",
+            "headers": {},
+            "bodyBase64": ""
+        }))
+        .expect("real media query should return a response");
+
+        assert_eq!(result["statusCode"], 200);
         assert_eq!(result["bodyBase64"], "");
     }
 
