@@ -334,20 +334,22 @@ fn restore_target(query: &Option<String>) -> Result<PluginMediaInfoTarget, Plugi
     let id = url
         .query_pairs()
         .find(|(key, _)| key.eq_ignore_ascii_case("id"));
-    match (path, id) {
-        (Some((_, value)), None) if !value.is_empty() => Ok(PluginMediaInfoTarget {
-            path: Some(value.into_owned()),
-            ..Default::default()
-        }),
-        (None, Some((_, value))) if !value.is_empty() => Ok(PluginMediaInfoTarget {
+    if let Some((_, value)) = id.filter(|(_, value)| !value.is_empty()) {
+        return Ok(PluginMediaInfoTarget {
             item_id: Some(value.into_owned()),
             ..Default::default()
-        }),
-        _ => Err(PluginRpcError {
-            code: "EMBY_ROUTE_INVALID_REQUEST".to_owned(),
-            message: "Emby media info target is ambiguous".to_owned(),
-        }),
+        });
     }
+    if let Some((_, value)) = path.filter(|(_, value)| !value.is_empty()) {
+        return Ok(PluginMediaInfoTarget {
+            path: Some(value.into_owned()),
+            ..Default::default()
+        });
+    }
+    Err(PluginRpcError {
+        code: "EMBY_ROUTE_INVALID_REQUEST".to_owned(),
+        message: "Emby media info target is missing".to_owned(),
+    })
 }
 
 fn parse_restore_chapters(bundle: &Value) -> Result<Vec<PluginMediaInfoChapter>, PluginRpcError> {
@@ -859,5 +861,31 @@ mod tests {
         assert_eq!(result["mediaInfoImport"]["target"]["path"], "/media.strm");
         assert_eq!(result["mediaInfoImport"]["media"]["container"], "mkv");
         assert_eq!(result["mediaInfoImport"]["chapters"][0]["chapterIndex"], 0);
+    }
+
+    #[test]
+    fn emby_sync_media_info_prefers_id_when_path_is_also_present() {
+        let body = json!([{
+            "MediaSourceInfo": {
+                "Container": "mkv",
+                "RunTimeTicks": 120000000,
+                "MediaStreams": [{"Type": "Video", "Index": 0, "Codec": "hevc"}]
+            },
+            "Chapters": []
+        }]);
+        let body_base64 = BASE64.encode(serde_json::to_vec(&body).expect("bundle JSON"));
+        let result = super::sync_media_info(json!({
+            "method": "POST",
+            "path": "/Items/SyncMediaInfo",
+            "query": "Id=media-id&Path=%2Fmedia.strm",
+            "hostCapabilities": ["media.info.import"],
+            "headers": {},
+            "bodyBase64": body_base64
+        }))
+        .expect("Id takes precedence over Path per the Shenyi contract");
+
+        assert_eq!(result["statusCode"], 200);
+        assert_eq!(result["mediaInfoImport"]["target"]["itemId"], "media-id");
+        assert!(result["mediaInfoImport"]["target"].get("path").is_none());
     }
 }
