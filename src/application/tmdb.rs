@@ -77,8 +77,8 @@ impl TmdbClient {
     pub fn new_with_embedded_fallback(config: TmdbClientConfig) -> Result<Self, TmdbError> {
         Self::new_with_fallback(
             config,
-            Some(TmdbCredential::ApiKey(EMBEDDED_TMDB_API_KEY.to_owned()))
-                .filter(|_| !EMBEDDED_TMDB_API_KEY.is_empty()),
+            (!EMBEDDED_TMDB_API_KEY.is_empty())
+                .then_some(TmdbCredential::ApiKey(EMBEDDED_TMDB_API_KEY.to_owned())),
         )
     }
 
