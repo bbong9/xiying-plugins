@@ -17,7 +17,7 @@ const DEFAULT_BASE_URL: &str = "https://api.themoviedb.org/";
 const MAX_RESPONSE_BYTES: usize = 4 * 1024 * 1024;
 pub const TMDB_MAX_CONCURRENT_REQUESTS: usize = 16;
 pub const TMDB_REQUESTS_PER_SECOND: u32 = 32;
-pub(crate) const EMBEDDED_TMDB_API_KEY: &str = "f6bd687ffa63cd282b6ff2c6877f2669";
+pub(crate) const EMBEDDED_TMDB_API_KEY: &str = "";
 
 #[derive(Clone)]
 pub struct TmdbClientConfig {
@@ -73,11 +73,12 @@ impl TmdbClient {
         Self::new_with_fallback(config, None)
     }
 
-    /// Uses the embedded TMDb API key only when no credential is supplied in `config`.
+    /// Requires a configured credential when the embedded fallback is empty.
     pub fn new_with_embedded_fallback(config: TmdbClientConfig) -> Result<Self, TmdbError> {
         Self::new_with_fallback(
             config,
-            Some(TmdbCredential::ApiKey(EMBEDDED_TMDB_API_KEY.to_owned())),
+            Some(TmdbCredential::ApiKey(EMBEDDED_TMDB_API_KEY.to_owned()))
+                .filter(|_| !EMBEDDED_TMDB_API_KEY.is_empty()),
         )
     }
 
@@ -192,9 +193,9 @@ impl TmdbClient {
             .or_else(|| {
                 configured_token
                     .clone()
+                    .filter(|value| !value.trim().is_empty())
                     .map(TmdbCredential::ReadAccessToken)
-            })
-            .unwrap_or_else(|| TmdbCredential::ApiKey(EMBEDDED_TMDB_API_KEY.to_owned()));
+            });
         let config = TmdbClientConfig {
             base_url: configured_base_url
                 .filter(|value| !value.trim().is_empty())
@@ -206,7 +207,7 @@ impl TmdbClient {
             read_access_token: environment_token.or(configured_token),
             ..TmdbClientConfig::default()
         };
-        Self::new_with_fallback(config, Some(fallback_credential))
+        Self::new_with_fallback(config, fallback_credential)
     }
 
     pub async fn set_api_key(&self, api_key: Option<&str>) {
@@ -1685,13 +1686,10 @@ mod tests {
     }
 
     #[test]
-    fn embedded_fallback_constructor_supplies_an_api_key_without_plugin_credentials() {
-        let client = TmdbClient::new_with_embedded_fallback(TmdbClientConfig::default())
-            .expect("embedded fallback should configure an API-key credential");
-
+    fn embedded_fallback_constructor_requires_a_configured_credential() {
         assert!(matches!(
-            client.fallback_credential,
-            TmdbCredential::ApiKey(_)
+            TmdbClient::new_with_embedded_fallback(TmdbClientConfig::default()),
+            Err(TmdbError::MissingToken)
         ));
         assert!(matches!(
             TmdbClient::new(TmdbClientConfig::default()),

@@ -1,6 +1,6 @@
 # Lux Plugins
 
-This repository is the default plugin store for [Lux](https://github.com/Qoo-330ml/Lux).
+汐影插件商店
 
 This repository contains the plugin source code. A push to `main` starts
 `.github/workflows/release.yml`, which compares `plugins.json` with the previous revision and only

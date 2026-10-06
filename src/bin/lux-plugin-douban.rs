@@ -21,9 +21,9 @@ use tokio::sync::{Mutex, OnceCell};
 
 const PLUGIN_ID: &str = "org.lux.douban";
 const PLUGIN_NAME: &str = "豆瓣元数据插件";
-// Public WeChat client credential used by the upstream Jellyfin Douban plugin.
-// Administrators may override it through plugin configuration or the environment.
-const EMBEDDED_DOUBAN_API_KEY: &str = "054022eaeae0b00e0fc068c0c0a2102a";
+// The upstream Jellyfin Douban plugin used a public WeChat client credential.
+// The embedded credential is empty; administrators must configure their own.
+const EMBEDDED_DOUBAN_API_KEY: &str = "";
 const CACHE_TTL: Duration = Duration::from_secs(15 * 60);
 const CACHE_CAPACITY: usize = 256;
 const MAX_SEARCH_RESULTS: usize = 20;
@@ -572,7 +572,8 @@ fn build_client() -> Result<DoubanClient, luxd::application::douban::DoubanError
             .ok()
             .filter(|value| !value.trim().is_empty())
             .unwrap_or_else(|| EMBEDDED_DOUBAN_API_KEY.to_owned()),
-    );
+    )
+    .filter(|value| !value.trim().is_empty());
     let api_secret = env::var("LUX_DOUBAN_API_SECRET")
         .ok()
         .filter(|value| !value.trim().is_empty());
@@ -772,9 +773,10 @@ mod tests {
     }
 
     #[test]
-    fn always_has_a_default_public_key_without_configuration() {
+    fn has_no_embedded_key_without_configuration() {
+        // 假定测试环境没有设置 LUX_DOUBAN_API_KEY。
         let client = build_client().expect("client");
-        assert!(client.has_api_credentials());
+        assert!(!client.has_api_credentials());
     }
 
     #[test]
