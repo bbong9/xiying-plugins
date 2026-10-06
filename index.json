@@ -4,11 +4,11 @@
   "description": "汐影插件目录",
   "plugins": [
     {
-      "id": "org.lux.danmaku",
+      "id": "org.xiying.danmaku",
       "name": "弹幕匹配",
       "description": "匹配本地视频并获取 Bilibili 标准弹幕 XML。",
       "category": "MEDIA",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -19,23 +19,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.danmaku/org.lux.danmaku-0.1.4-linux-aarch64.zip",
-          "sha256": "b1c08168845fab29e1ef16115cd359fddbe0aa88f746de968370d9eda8d7099e"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.danmaku/org.xiying.danmaku-0.1.5-linux-aarch64.zip",
+          "sha256": "a79dbbd9261578a58049985e2a10f1c2a8a331693bf353ef0e0ba568189769db"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.danmaku/org.lux.danmaku-0.1.4-linux-x86_64.zip",
-          "sha256": "57809c0dcdb29bcac3d25c113c3d644124797e8a0a38905d33c8b167213c340f"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.danmaku/org.xiying.danmaku-0.1.5-linux-x86_64.zip",
+          "sha256": "b20bd3b1430fc1c202a6111872f9f94f2b0b756ee744c9beccebbaf832f42f33"
         }
       ]
     },
     {
-      "id": "org.lux.douban",
+      "id": "org.xiying.douban",
       "name": "豆瓣元数据插件",
       "description": "从豆瓣提供电影、剧集、图片、人物和预告片元数据。公开搜索无需配置；详情接口可配置豆瓣客户端凭据。",
       "category": "SCRAPER",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "runtime": "process",
       "providerKey": "douban",
       "aliases": [
@@ -54,23 +54,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.douban/org.lux.douban-0.1.5-linux-aarch64.zip",
-          "sha256": "05d8a36a4c3af6fea8d13e0dfcad7a052f1586c5e61c312fb7462d1c0069348b"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.douban/org.xiying.douban-0.1.6-linux-aarch64.zip",
+          "sha256": "30f5122780f35a2a2fed0cb12b974509e3fbaf800521a601e0605b044d255d69"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.douban/org.lux.douban-0.1.5-linux-x86_64.zip",
-          "sha256": "883c4f22a1877a661410ef8c350e5d779bbd2f82a64dd367471a94440a656b20"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.douban/org.xiying.douban-0.1.6-linux-x86_64.zip",
+          "sha256": "f2062c93a255bcdd0da9fe9d3c9c67eb9091fdb828ca2035d05dd9b016858a8f"
         }
       ]
     },
     {
-      "id": "org.lux.emby-migration",
+      "id": "org.xiying.emby-migration",
       "name": "Emby 迁移助手",
       "description": "从 Emby 迁移用户资料、媒体状态、播放位置、次数、最近播放时间和收藏；仅支持 Emby 到 Lux。",
       "category": "MIGRATION",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -81,23 +81,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.emby-migration/org.lux.emby-migration-0.1.6-linux-aarch64.zip",
-          "sha256": "e4290039aedab8772165daaa2b8f6d42acd5a1488916fc853afa20fa4a7a2670"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.emby-migration/org.xiying.emby-migration-0.1.7-linux-aarch64.zip",
+          "sha256": "b7301e21c70a5b83c12ba64f6c7ef794fbe98483f91b5275beeec7980259b06c"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.emby-migration/org.lux.emby-migration-0.1.6-linux-x86_64.zip",
-          "sha256": "c8268bf9d96e1085d90a9da7b31540dc9246783c6e8a92ba62e9ea68755be7ba"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.emby-migration/org.xiying.emby-migration-0.1.7-linux-x86_64.zip",
+          "sha256": "c81497370213414e8de94d90216f78f2ec2dbd47d5a02f86c8fade27e179fb80"
         }
       ]
     },
     {
-      "id": "org.lux.intro-outro-detector",
+      "id": "org.xiying.intro-outro-detector",
       "name": "片头片尾检测",
       "description": "使用带位误差容忍、对齐和跨分集共识的有界 Chromaprint 指纹识别共同片头和片尾。",
       "category": "MEDIA",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -108,23 +108,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.intro-outro-detector/org.lux.intro-outro-detector-0.1.4-linux-aarch64.zip",
-          "sha256": "fa0af3d060ae0f5a144688b2ad08868a6a0274941ba6ea95894c8170a21e3702"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.intro-outro-detector/org.xiying.intro-outro-detector-0.1.5-linux-aarch64.zip",
+          "sha256": "dcdb90e72fbd8f7421fc201d9956737143bf424e08d64f4dbad9551db5c60e62"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.intro-outro-detector/org.lux.intro-outro-detector-0.1.4-linux-x86_64.zip",
-          "sha256": "9660411110a4e15cba0d07dddd5b7c77e5f23b064b7844f6b68bb3fea0f13baf"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.intro-outro-detector/org.xiying.intro-outro-detector-0.1.5-linux-x86_64.zip",
+          "sha256": "b4cd41fcf59035051517e431366ccfdff36fdea4570e59f0f908b818c564774b"
         }
       ]
     },
     {
-      "id": "org.lux.ip-hiofd",
+      "id": "org.xiying.ip-hiofd",
       "name": "IP归属地查询增强",
       "description": "通过 Hiofd 查询公网 IP 的归属地信息。",
       "category": "NETWORK",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -135,23 +135,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.ip-hiofd/org.lux.ip-hiofd-0.1.1-linux-aarch64.zip",
-          "sha256": "14b30427ea7d22215b9e029fefd8c3c8bf41c6317ca91420748ec0b8819483bc"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.ip-hiofd/org.xiying.ip-hiofd-0.1.2-linux-aarch64.zip",
+          "sha256": "864356be3e4369ddace567acd3b2c867e0d34bc422502f084e4c5bfdaf2ce41d"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.ip-hiofd/org.lux.ip-hiofd-0.1.1-linux-x86_64.zip",
-          "sha256": "47a95604dd21c478945883f422383ff97f13eb33a45bdd56c026fdfb9aa27c2b"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.ip-hiofd/org.xiying.ip-hiofd-0.1.2-linux-x86_64.zip",
+          "sha256": "9ff97f68a77926bfc2810a70b6060e8fe0c49770f535d24fc12a0e27d1432e8b"
         }
       ]
     },
     {
-      "id": "org.lux.login-background",
+      "id": "org.xiying.login-background",
       "name": "统一登录背景",
-      "description": "在必应每日图片、TMDb 日榜横幅与单张自定义图片之间选择 Lux 登录页背景。",
+      "description": "在必应每日图片、TMDb 日榜横幅与单张自定义图片之间选择 汐影登录页背景。",
       "category": "UTILITY",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -162,23 +162,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.login-background/org.lux.login-background-0.1.2-linux-aarch64.zip",
-          "sha256": "58b472bef3f29c9ea3b28d8d758d97c29412edea30969368acaa52e82f614939"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.login-background/org.xiying.login-background-0.1.3-linux-aarch64.zip",
+          "sha256": "79223e1e4522292ebbcdcac7ae6cc2ea40f2e9e0c51fc0f35bb746f7df54f6c8"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.login-background/org.lux.login-background-0.1.2-linux-x86_64.zip",
-          "sha256": "e4afc738740340b9a30aa60b5dfef00cb79323c3ab214b8a037bf05824c1e22b"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.login-background/org.xiying.login-background-0.1.3-linux-x86_64.zip",
+          "sha256": "c3b2177cf8b318f860a65f56ff6c00eda43ffb449962aaaac62a2f9c0abbb6d8"
         }
       ]
     },
     {
-      "id": "org.lux.qoo-ip138",
+      "id": "org.xiying.qoo-ip138",
       "name": "ip138 IP归属地查询",
       "description": "通过 ipshudi.com 查询公网 IP 的归属地信息。",
       "category": "NETWORK",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -189,23 +189,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.qoo-ip138/org.lux.qoo-ip138-0.1.1-linux-aarch64.zip",
-          "sha256": "de72306b9625c05ff01045070a7330d72325b94005fd0207848fd18dedb25228"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.qoo-ip138/org.xiying.qoo-ip138-0.1.2-linux-aarch64.zip",
+          "sha256": "45e990f243cde05ca8be916e50d551f5c9243b152c508e303fb69a0c8dfa52af"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.qoo-ip138/org.lux.qoo-ip138-0.1.1-linux-x86_64.zip",
-          "sha256": "149493403b45e038a9bfcddc908550c41f74381035ad8b546cbeee6338d2aa00"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.qoo-ip138/org.xiying.qoo-ip138-0.1.2-linux-x86_64.zip",
+          "sha256": "3ef528f93a14b8e19752caa59d2237cf5581d31ca90a05f4dd59ec1c634dd1ca"
         }
       ]
     },
     {
-      "id": "org.lux.strm-media-info",
+      "id": "org.xiying.strm-media-info",
       "name": "strm媒体信息提取",
       "description": "使用 ffprobe 提取媒体信息，并使用 ffmpeg 补全 STRM 缩略图。",
       "category": "MEDIA",
-      "version": "0.2.8",
+      "version": "0.2.9",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -218,23 +218,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.strm-media-info/org.lux.strm-media-info-0.2.8-linux-aarch64.zip",
-          "sha256": "e7092a8c491c7d4d0b7eb8797f5b1299099ad5d26a52176776757af0533bfed0"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.strm-media-info/org.xiying.strm-media-info-0.2.9-linux-aarch64.zip",
+          "sha256": "156ca3ac00e43b1f4f6fe3b4d0ba54da96b2afe78655725b7dd0a55e784a28a7"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.strm-media-info/org.lux.strm-media-info-0.2.8-linux-x86_64.zip",
-          "sha256": "569552a28279554e9b2255c872f588de0a90eb4f8056b27bb698b543b02b52c4"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.strm-media-info/org.xiying.strm-media-info-0.2.9-linux-x86_64.zip",
+          "sha256": "ee7476fa41afb5c1a0bea68c3c49954899763ec030c3c3d5eedb23abd1a739e1"
         }
       ]
     },
     {
-      "id": "org.lux.theintrodb-chapter-source",
+      "id": "org.xiying.theintrodb-chapter-source",
       "name": "TheIntroDB 片头片尾章节源",
-      "description": "从 TheIntroDB 查询已标注的片头和片尾，并保存为 Lux 特殊章节；不读取视频、不运行 ffmpeg。",
+      "description": "从 TheIntroDB 查询已标注的片头和片尾，并保存为 汐影特殊章节；不读取视频、不运行 ffmpeg。",
       "category": "MEDIA",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -245,23 +245,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.theintrodb-chapter-source/org.lux.theintrodb-chapter-source-0.1.2-linux-aarch64.zip",
-          "sha256": "a58b20115bd51035157c45502ab556f7a37c2a081ca793014c7224141b96efac"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.theintrodb-chapter-source/org.xiying.theintrodb-chapter-source-0.1.3-linux-aarch64.zip",
+          "sha256": "b7a792ed7739a027a7ddfd497747247e3afc33d2dd368deaa35e501ebd558eda"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.theintrodb-chapter-source/org.lux.theintrodb-chapter-source-0.1.2-linux-x86_64.zip",
-          "sha256": "552a6e9c37a868f3069ae6f42b4964eb2751aa43fe2b189a13366035025d2ea2"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.theintrodb-chapter-source/org.xiying.theintrodb-chapter-source-0.1.3-linux-x86_64.zip",
+          "sha256": "c2761c039fa58e1ac6a3a117e6eb952ea0863cbc9a1892ed9b09f86b9833ad83"
         }
       ]
     },
     {
-      "id": "org.lux.tmdb",
+      "id": "org.xiying.tmdb",
       "name": "TMDb 元数据插件",
       "description": "从 TMDb 提供 Emby 风格电影、剧集和图片元数据。",
       "category": "SCRAPER",
-      "version": "0.1.13",
+      "version": "0.1.14",
       "runtime": "process",
       "providerKey": "tmdb",
       "aliases": [
@@ -280,23 +280,23 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.tmdb/org.lux.tmdb-0.1.13-linux-aarch64.zip",
-          "sha256": "534d916d607cbd5c3ba104441989857dffa394f7e041ecfe7fd66773dbc8ce83"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.tmdb/org.xiying.tmdb-0.1.14-linux-aarch64.zip",
+          "sha256": "f2fa07eeefc4a3226287015058e2b845c39f411ebfaaba78668a59b7819878dc"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.tmdb/org.lux.tmdb-0.1.13-linux-x86_64.zip",
-          "sha256": "37691548c9c0e1fb17b94e2deceb98f9f2e566a74f85c324f255f25fa42da26b"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.tmdb/org.xiying.tmdb-0.1.14-linux-x86_64.zip",
+          "sha256": "7d37eed502ae82b55839c589651fb531a993038cc566bc7fa255fc569a4995a5"
         }
       ]
     },
     {
-      "id": "org.lux.webhook",
+      "id": "org.xiying.webhook",
       "name": "Webhook 通知器",
-      "description": "将 Lux 核心生成的统一通知内容发送到 HTTP(S) Webhook。",
+      "description": "将 汐影核心生成的统一通知内容发送到 HTTP(S) Webhook。",
       "category": "NOTIFICATION",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -307,14 +307,14 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.webhook/org.lux.webhook-0.1.4-linux-aarch64.zip",
-          "sha256": "27074c41f33d11257be187f8081c7318c5f9e39c6ff9dabef4082bd9585f9395"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.webhook/org.xiying.webhook-0.1.5-linux-aarch64.zip",
+          "sha256": "644dab29ec2c5507bc7dce21c699ab9545e04786242aa5580f1bb70a9789554e"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.lux.webhook/org.lux.webhook-0.1.4-linux-x86_64.zip",
-          "sha256": "ef2f1ab2199f5a60fed0680239c36aabb75ec346eb86d9c05c0a9a8f3790e044"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.webhook/org.xiying.webhook-0.1.5-linux-x86_64.zip",
+          "sha256": "2d061b9995d5c6e20a67b3a8736f6e74705070fe1a3424a13b96219562990c08"
         }
       ]
     }
