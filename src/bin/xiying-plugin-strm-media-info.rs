@@ -1,7 +1,7 @@
 use std::{collections::BTreeMap, path::PathBuf, time::Duration};
 
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
-use luxd::application::{
+use xiyingd::application::{
     plugin_protocol::{
         MediaProbeRpcResult, MediaProbeRpcStream, MediaProbeRpcStreamType, PluginEmbyRouteRequest,
         PluginMediaInfoChapter, PluginMediaInfoImport, PluginMediaInfoTarget, PluginRequest,
@@ -18,7 +18,7 @@ use tokio::{
     time::timeout,
 };
 
-const PLUGIN_ID: &str = "org.lux.strm-media-info";
+const PLUGIN_ID: &str = "org.xiying.strm-media-info";
 const PLUGIN_NAME: &str = "strm媒体信息提取";
 const FFPROBE_TIMEOUT: Duration = Duration::from_secs(30);
 const FFMPEG_TIMEOUT: Duration = Duration::from_secs(60);
@@ -232,7 +232,7 @@ fn parse_emby_bundle(bundle: &Value) -> Result<MediaProbeResult, PluginRpcError>
                 .get("Index")
                 .and_then(Value::as_i64)
                 .unwrap_or(ordinal as i64);
-            Ok(luxd::application::probe::MediaStreamResult {
+            Ok(xiyingd::application::probe::MediaStreamResult {
                 stream_index,
                 stream_type,
                 codec: string_field(stream, "Codec"),
@@ -777,7 +777,7 @@ fn rpc_result(result: MediaProbeResult, thumbnail: Option<Vec<u8>>) -> MediaProb
     }
 }
 
-fn rpc_stream(stream: luxd::application::probe::MediaStreamResult) -> MediaProbeRpcStream {
+fn rpc_stream(stream: xiyingd::application::probe::MediaStreamResult) -> MediaProbeRpcStream {
     MediaProbeRpcStream {
         stream_index: stream.stream_index,
         stream_type: match stream.stream_type {

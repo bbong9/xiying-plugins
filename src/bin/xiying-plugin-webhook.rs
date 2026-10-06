@@ -4,7 +4,7 @@ use std::{
 };
 
 use hmac::{Hmac, Mac};
-use luxd::application::plugin_protocol::{
+use xiyingd::application::plugin_protocol::{
     NOTIFICATION_SEND_CAPABILITY, NOTIFICATION_SEND_METHOD, NotificationSendRpcResult,
     NotificationSendStatus, PluginRequest, PluginResponse, PluginRpcError,
 };
@@ -17,7 +17,7 @@ use tokio::{
     net::lookup_host,
 };
 
-const PLUGIN_ID: &str = "org.lux.webhook";
+const PLUGIN_ID: &str = "org.xiying.webhook";
 const PLUGIN_NAME: &str = "Webhook 通知器";
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(20);
 const MAX_URL_LENGTH: usize = 2048;

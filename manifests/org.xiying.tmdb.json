@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "id": "org.lux.tmdb",
+  "id": "org.xiying.tmdb",
   "name": "TMDb 元数据插件",
   "description": "从 TMDb 提供 Emby 风格电影、剧集和图片元数据。",
   "version": "__VERSION__",

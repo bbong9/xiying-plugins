@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "id": "org.lux.ip-hiofd",
+  "id": "org.xiying.ip-hiofd",
   "name": "IP归属地查询增强",
   "description": "通过 Hiofd 查询公网 IP 的归属地信息。",
   "version": "__VERSION__",

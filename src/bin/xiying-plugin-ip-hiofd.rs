@@ -6,14 +6,14 @@ use ip_location_plugin::{
     invalid_ip, invalid_response, is_public_ip, read_limited_body, text_field, upstream_error,
     value_as_i64,
 };
-use luxd::application::plugin_protocol::{
+use xiyingd::application::plugin_protocol::{
     IP_LOCATION_CAPABILITY, IpLocationRpcRequest, IpLocationRpcResult, PluginRpcError,
 };
 use md5::{Digest, Md5};
 use rand_core::{OsRng, RngCore};
 use serde_json::{Value, json};
 
-const PLUGIN_ID: &str = "org.lux.ip-hiofd";
+const PLUGIN_ID: &str = "org.xiying.ip-hiofd";
 const PLUGIN_NAME: &str = "IP归属地查询增强";
 const API_URL: &str = "https://toola.hiofd.com/router/rest";
 const SERVICE_ID: &str = "IpQuery";
@@ -72,7 +72,7 @@ async fn lookup_hiofd(ip: std::net::IpAddr) -> Result<IpLocationRpcResult, Plugi
         "x": signature,
         "r": request_nonce,
     });
-    let client = luxd::network::client_builder_from_env()
+    let client = xiyingd::network::client_builder_from_env()
         .map_err(|_| upstream_error())?
         .timeout(std::time::Duration::from_secs(LOOKUP_TIMEOUT_SECONDS))
         .user_agent("Lux IP location plugin")

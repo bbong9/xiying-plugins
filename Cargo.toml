@@ -1,5 +1,5 @@
 [package]
-name = "lux-plugins"
+name = "xiying-plugins"
 version = "0.1.3"
 edition = "2024"
 rust-version = "1.85"
@@ -20,5 +20,5 @@ sha2 = "0.10"
 tokio = { version = "1", features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"] }
 
 [lib]
-name = "luxd"
+name = "xiyingd"
 path = "src/lib.rs"

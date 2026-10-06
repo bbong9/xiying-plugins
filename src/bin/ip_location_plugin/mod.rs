@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use luxd::application::plugin_protocol::{PluginRequest, PluginResponse, PluginRpcError};
+use xiyingd::application::plugin_protocol::{PluginRequest, PluginResponse, PluginRpcError};
 use serde_json::Value;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
@@ -91,7 +91,7 @@ pub async fn read_limited_body(
 
 pub fn is_public_ip(raw_ip: &str) -> Option<std::net::IpAddr> {
     let ip = raw_ip.trim().parse().ok()?;
-    luxd::network::is_public_address(ip).then_some(ip)
+    xiyingd::network::is_public_address(ip).then_some(ip)
 }
 
 #[allow(dead_code)]

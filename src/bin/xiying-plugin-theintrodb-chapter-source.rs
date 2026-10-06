@@ -1,6 +1,6 @@
 use std::{collections::HashMap, env, io, path::PathBuf, time::Duration};
 
-use luxd::{
+use xiyingd::{
     application::plugin_protocol::{
         CHAPTER_LOOKUP_CAPABILITY, CHAPTER_LOOKUP_METHOD, ChapterDetectMarkerType,
         ChapterDetectRpcMarker, ChapterLookupRpcEpisode, ChapterLookupRpcRequest,
@@ -17,7 +17,7 @@ use tokio::{
     time::sleep,
 };
 
-const PLUGIN_ID: &str = "org.lux.theintrodb-chapter-source";
+const PLUGIN_ID: &str = "org.xiying.theintrodb-chapter-source";
 const PLUGIN_NAME: &str = "TheIntroDB 片头片尾章节源";
 const API_BASE: &str = "https://api.theintrodb.org/v3/media";
 const MAX_EPISODES: usize = 64;

@@ -6,7 +6,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use luxd::application::{
+use xiyingd::application::{
     media_matching::{MediaKind, parse_media_name, title_candidates},
     plugin_protocol::{PluginRequest, PluginResponse, PluginRpcError},
     settings::{
@@ -235,7 +235,7 @@ async fn handle_request(request: PluginRequest) -> PluginResponse {
 async fn handle_method(method: &str, params: Value) -> Result<Value, PluginRpcError> {
     match method {
         "plugin.hello" => Ok(json!({
-            "id": "org.lux.tmdb",
+            "id": "org.xiying.tmdb",
             "name": "TMDb 元数据插件",
             "apiVersion": 1,
             "capabilities": [
@@ -456,10 +456,10 @@ async fn search_movies(
     query: &str,
     year: Option<i32>,
     language: &str,
-) -> Result<TmdbMovieSearchResponse, luxd::application::tmdb::TmdbError> {
+) -> Result<TmdbMovieSearchResponse, xiyingd::application::tmdb::TmdbError> {
     let client = client()
         .await
-        .map_err(|error| luxd::application::tmdb::TmdbError::Transport(error.message))?;
+        .map_err(|error| xiyingd::application::tmdb::TmdbError::Transport(error.message))?;
     let mut last_response = None;
     for search_year in search_years(year) {
         for candidate in title_candidates(query) {
@@ -479,10 +479,10 @@ async fn search_tv(
     query: &str,
     year: Option<i32>,
     language: &str,
-) -> Result<TmdbTvSearchResponse, luxd::application::tmdb::TmdbError> {
+) -> Result<TmdbTvSearchResponse, xiyingd::application::tmdb::TmdbError> {
     let client = client()
         .await
-        .map_err(|error| luxd::application::tmdb::TmdbError::Transport(error.message))?;
+        .map_err(|error| xiyingd::application::tmdb::TmdbError::Transport(error.message))?;
     let mut last_response = None;
     for search_year in search_years(year) {
         for candidate in title_candidates(query) {
@@ -496,8 +496,8 @@ async fn search_tv(
     completed_search(last_response)
 }
 
-fn completed_search<T>(last_response: Option<T>) -> Result<T, luxd::application::tmdb::TmdbError> {
-    last_response.ok_or(luxd::application::tmdb::TmdbError::NotFound)
+fn completed_search<T>(last_response: Option<T>) -> Result<T, xiyingd::application::tmdb::TmdbError> {
+    last_response.ok_or(xiyingd::application::tmdb::TmdbError::NotFound)
 }
 
 fn search_years(year: Option<i32>) -> Vec<Option<i32>> {
@@ -678,10 +678,10 @@ fn fill_episode_translation_fields(details: &mut TmdbEpisodeDetails, languages: 
 async fn localized_movie_details(
     movie_id: i64,
     languages: &[String],
-) -> Result<TmdbMovieDetails, luxd::application::tmdb::TmdbError> {
+) -> Result<TmdbMovieDetails, xiyingd::application::tmdb::TmdbError> {
     let client = client()
         .await
-        .map_err(|error| luxd::application::tmdb::TmdbError::Transport(error.message))?;
+        .map_err(|error| xiyingd::application::tmdb::TmdbError::Transport(error.message))?;
     let mut details = client
         .movie_details_with_append(movie_id, &languages[0])
         .await?;
@@ -707,10 +707,10 @@ async fn localized_movie_details(
 async fn localized_series_details(
     series_id: i64,
     languages: &[String],
-) -> Result<TmdbSeriesDetails, luxd::application::tmdb::TmdbError> {
+) -> Result<TmdbSeriesDetails, xiyingd::application::tmdb::TmdbError> {
     let client = client()
         .await
-        .map_err(|error| luxd::application::tmdb::TmdbError::Transport(error.message))?;
+        .map_err(|error| xiyingd::application::tmdb::TmdbError::Transport(error.message))?;
     let mut details = client
         .series_details_with_append(series_id, &languages[0])
         .await?;
@@ -727,10 +727,10 @@ async fn localized_season_details(
     series_id: i64,
     season_number: i32,
     languages: &[String],
-) -> Result<TmdbSeasonDetails, luxd::application::tmdb::TmdbError> {
+) -> Result<TmdbSeasonDetails, xiyingd::application::tmdb::TmdbError> {
     let client = client()
         .await
-        .map_err(|error| luxd::application::tmdb::TmdbError::Transport(error.message))?;
+        .map_err(|error| xiyingd::application::tmdb::TmdbError::Transport(error.message))?;
     let mut details = client
         .season_details_with_append(series_id, season_number, &languages[0])
         .await?;
@@ -743,10 +743,10 @@ async fn localized_episode_details(
     season_number: i32,
     episode_number: i32,
     languages: &[String],
-) -> Result<TmdbEpisodeDetails, luxd::application::tmdb::TmdbError> {
+) -> Result<TmdbEpisodeDetails, xiyingd::application::tmdb::TmdbError> {
     let client = client()
         .await
-        .map_err(|error| luxd::application::tmdb::TmdbError::Transport(error.message))?;
+        .map_err(|error| xiyingd::application::tmdb::TmdbError::Transport(error.message))?;
     let mut details = client
         .episode_details_with_append(series_id, season_number, episode_number, &languages[0])
         .await?;
@@ -885,10 +885,10 @@ async fn metadata_bundle(params: Value) -> Result<Value, PluginRpcError> {
 async fn localized_movie_details_with_append(
     movie_id: i64,
     languages: &[String],
-) -> Result<TmdbMovieDetails, luxd::application::tmdb::TmdbError> {
+) -> Result<TmdbMovieDetails, xiyingd::application::tmdb::TmdbError> {
     let client = client()
         .await
-        .map_err(|error| luxd::application::tmdb::TmdbError::Transport(error.message))?;
+        .map_err(|error| xiyingd::application::tmdb::TmdbError::Transport(error.message))?;
     let mut details = client
         .movie_details_with_append(movie_id, &languages[0])
         .await?;
@@ -909,10 +909,10 @@ async fn localized_movie_details_with_append(
 async fn localized_series_details_with_append(
     series_id: i64,
     languages: &[String],
-) -> Result<TmdbSeriesDetails, luxd::application::tmdb::TmdbError> {
+) -> Result<TmdbSeriesDetails, xiyingd::application::tmdb::TmdbError> {
     let client = client()
         .await
-        .map_err(|error| luxd::application::tmdb::TmdbError::Transport(error.message))?;
+        .map_err(|error| xiyingd::application::tmdb::TmdbError::Transport(error.message))?;
     let mut details = client
         .series_details_with_append(series_id, &languages[0])
         .await?;
@@ -1406,7 +1406,7 @@ async fn credits(params: Value) -> Result<Value, PluginRpcError> {
     Ok(credits_result(response))
 }
 
-fn credits_result(response: luxd::application::tmdb::TmdbCreditsResponse) -> Value {
+fn credits_result(response: xiyingd::application::tmdb::TmdbCreditsResponse) -> Value {
     json!({
         "cast": response.cast.into_iter().map(|actor| json!({
             "Id": actor.id.to_string(),
@@ -1576,8 +1576,8 @@ fn invalid(message: &str) -> PluginRpcError {
     }
 }
 
-fn tmdb_error(error: luxd::application::tmdb::TmdbError) -> PluginRpcError {
-    let code = if matches!(error, luxd::application::tmdb::TmdbError::NotFound) {
+fn tmdb_error(error: xiyingd::application::tmdb::TmdbError) -> PluginRpcError {
+    let code = if matches!(error, xiyingd::application::tmdb::TmdbError::NotFound) {
         "PLUGIN_PROVIDER_NOT_FOUND"
     } else {
         "PLUGIN_PROVIDER_ERROR"
@@ -1590,7 +1590,7 @@ fn tmdb_error(error: luxd::application::tmdb::TmdbError) -> PluginRpcError {
 
 #[cfg(test)]
 mod tests {
-    use luxd::application::tmdb::{
+    use xiyingd::application::tmdb::{
         TmdbAlternativeTitle, TmdbTranslation, TmdbTranslationData, TmdbTranslationsResponse,
     };
 
@@ -1799,7 +1799,7 @@ mod tests {
 
     #[test]
     fn tmdb_not_found_uses_the_provider_not_found_code() {
-        let error = tmdb_error(luxd::application::tmdb::TmdbError::NotFound);
+        let error = tmdb_error(xiyingd::application::tmdb::TmdbError::NotFound);
         assert_eq!(error.code, "PLUGIN_PROVIDER_NOT_FOUND");
     }
 
@@ -1852,9 +1852,9 @@ mod tests {
     fn plugin_config_path_prefers_the_host_supplied_file() {
         assert_eq!(
             plugin_config_path(Some(PathBuf::from(
-                "/config/plugin-config/org.lux.tmdb.json",
+                "/config/plugin-config/org.xiying.tmdb.json",
             ))),
-            Some(PathBuf::from("/config/plugin-config/org.lux.tmdb.json"))
+            Some(PathBuf::from("/config/plugin-config/org.xiying.tmdb.json"))
         );
         assert_eq!(plugin_config_path(None), None);
     }

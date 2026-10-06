@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "id": "org.lux.danmaku",
+  "id": "org.xiying.danmaku",
   "name": "弹幕匹配",
   "description": "匹配本地视频并获取 Bilibili 标准弹幕 XML。",
   "version": "__VERSION__",

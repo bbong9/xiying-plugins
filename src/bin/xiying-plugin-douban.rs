@@ -6,7 +6,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use luxd::application::{
+use xiyingd::application::{
     douban::{
         DoubanClient, DoubanClientConfig, DoubanCredit, DoubanSearchResponse, DoubanSubject,
         DoubanSuggestItem, first_release_date, parse_year, search_target_matches,
@@ -19,7 +19,7 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use tokio::sync::{Mutex, OnceCell};
 
-const PLUGIN_ID: &str = "org.lux.douban";
+const PLUGIN_ID: &str = "org.xiying.douban";
 const PLUGIN_NAME: &str = "豆瓣元数据插件";
 // The upstream Jellyfin Douban plugin used a public WeChat client credential.
 // The embedded credential is empty; administrators must configure their own.
@@ -562,10 +562,10 @@ async fn client() -> Result<&'static DoubanClient, PluginRpcError> {
     })
 }
 
-fn build_client() -> Result<DoubanClient, luxd::application::douban::DoubanError> {
+fn build_client() -> Result<DoubanClient, xiyingd::application::douban::DoubanError> {
     let config = read_plugin_config();
-    let proxy_url = luxd::network::proxy_url_from_env().map_err(|error| {
-        luxd::application::douban::DoubanError::InvalidConfig(error.to_string())
+    let proxy_url = xiyingd::network::proxy_url_from_env().map_err(|error| {
+        xiyingd::application::douban::DoubanError::InvalidConfig(error.to_string())
     })?;
     let api_key = Some(
         env::var("LUX_DOUBAN_API_KEY")
@@ -659,10 +659,10 @@ fn unsupported(item_type: &str) -> PluginRpcError {
     }
 }
 
-fn provider_error(error: luxd::application::douban::DoubanError) -> PluginRpcError {
+fn provider_error(error: xiyingd::application::douban::DoubanError) -> PluginRpcError {
     let code = match error {
-        luxd::application::douban::DoubanError::MissingCredentials => "PLUGIN_AUTH_FAILED",
-        luxd::application::douban::DoubanError::UnsupportedItemType(_) => {
+        xiyingd::application::douban::DoubanError::MissingCredentials => "PLUGIN_AUTH_FAILED",
+        xiyingd::application::douban::DoubanError::UnsupportedItemType(_) => {
             "PLUGIN_PROVIDER_NOT_FOUND"
         }
         _ => "PLUGIN_PROVIDER_ERROR",
@@ -783,9 +783,9 @@ mod tests {
     fn plugin_config_path_prefers_the_host_supplied_file() {
         assert_eq!(
             plugin_config_path(Some(PathBuf::from(
-                "/config/plugin-config/org.lux.douban.json",
+                "/config/plugin-config/org.xiying.douban.json",
             ))),
-            Some(PathBuf::from("/config/plugin-config/org.lux.douban.json"))
+            Some(PathBuf::from("/config/plugin-config/org.xiying.douban.json"))
         );
         assert_eq!(plugin_config_path(None), None);
     }

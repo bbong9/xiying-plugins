@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "id": "org.lux.intro-outro-detector",
+  "id": "org.xiying.intro-outro-detector",
   "name": "片头片尾检测",
   "description": "使用带位误差容忍、对齐和跨分集共识的有界 Chromaprint 指纹识别共同片头和片尾。",
   "version": "__VERSION__",

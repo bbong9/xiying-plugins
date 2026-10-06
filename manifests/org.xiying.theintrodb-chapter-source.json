@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
-  "id": "org.lux.theintrodb-chapter-source",
+  "id": "org.xiying.theintrodb-chapter-source",
   "name": "TheIntroDB 片头片尾章节源",
-  "description": "从 TheIntroDB 查询已标注的片头和片尾，并保存为 Lux 特殊章节；不读取视频、不运行 ffmpeg。",
+  "description": "从 TheIntroDB 查询已标注的片头和片尾，并保存为 汐影特殊章节；不读取视频、不运行 ffmpeg。",
   "version": "__VERSION__",
   "apiVersion": 1,
   "runtime": {"kind": "process", "entrypoint": "__ENTRYPOINT__"},

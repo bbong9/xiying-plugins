@@ -1,7 +1,7 @@
 # 统一登录背景插件迁移
 
-`org.lux.bing-daily-background` 与 `org.lux.tmdb-trending-background` 已由
-`org.lux.login-background` 取代。新版插件提供 Bing 每日图、TMDb 日榜和单张自定义上传图三种来源。
+`org.xiying.bing-daily-background` 与 `org.xiying.tmdb-trending-background` 已由
+`org.xiying.login-background` 取代。新版插件提供 Bing 每日图、TMDb 日榜和单张自定义上传图三种来源。
 
 ## 在 Lux 中迁移
 

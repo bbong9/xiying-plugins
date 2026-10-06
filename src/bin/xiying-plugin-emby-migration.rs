@@ -1,4 +1,4 @@
-use luxd::application::{
+use xiyingd::application::{
     emby_migration,
     plugin_protocol::{
         EMBY_MIGRATION_CAPABILITY, MIGRATION_AUTHENTICATE_USER_METHOD, MIGRATION_LIST_ITEMS_METHOD,
@@ -9,7 +9,7 @@ use luxd::application::{
 use serde_json::{Value, json};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
-const PLUGIN_ID: &str = "org.lux.emby-migration";
+const PLUGIN_ID: &str = "org.xiying.emby-migration";
 const PLUGIN_NAME: &str = "Emby 迁移助手";
 
 #[tokio::main]

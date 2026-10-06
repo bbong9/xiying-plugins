@@ -1,6 +1,6 @@
 # TheIntroDB 章节源
 
-`org.lux.theintrodb-chapter-source` 是 Lux 的独立在线章节插件。它调用
+`org.xiying.theintrodb-chapter-source` 是 Lux 的独立在线章节插件。它调用
 [TheIntroDB](https://theintrodb.org/) 的公开 API，查询已标注的片头和片尾，并把结果写入 Lux
 现有的特殊章节存储。
 

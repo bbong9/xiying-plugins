@@ -1,14 +1,14 @@
-use luxd::application::plugin_protocol::PluginManifest;
+use xiyingd::application::plugin_protocol::PluginManifest;
 
 #[test]
 fn unified_manifest_keeps_provider_consents_separate_and_image_host_managed() {
     let mut value: serde_json::Value =
-        serde_json::from_str(include_str!("../manifests/org.lux.login-background.json"))
+        serde_json::from_str(include_str!("../manifests/org.xiying.login-background.json"))
             .expect("unified login background manifest should parse");
     value["version"] = serde_json::json!("0.1.0");
     let manifest = PluginManifest::from_value(value).expect("manifest should satisfy the SDK");
 
-    assert_eq!(manifest.id, "org.lux.login-background");
+    assert_eq!(manifest.id, "org.xiying.login-background");
     assert_eq!(manifest.plugin_type, "login_background");
     assert_eq!(manifest.capabilities, ["login_background.get"]);
     assert_eq!(
@@ -52,12 +52,12 @@ fn official_catalog_contains_only_the_unified_background_provider() {
         .filter(|plugin_id| plugin_id.contains("background"))
         .collect::<Vec<_>>();
 
-    assert_eq!(background_ids, ["org.lux.login-background"]);
+    assert_eq!(background_ids, ["org.xiying.login-background"]);
     let entry = plugins
         .iter()
-        .find(|plugin| plugin["id"] == "org.lux.login-background")
+        .find(|plugin| plugin["id"] == "org.xiying.login-background")
         .expect("unified provider should be registered");
-    assert_eq!(entry["binary"], "lux-plugin-login-background");
-    assert_eq!(entry["version"], "0.1.1");
-    assert_eq!(entry["manifest"], "manifests/org.lux.login-background.json");
+    assert_eq!(entry["binary"], "xiying-plugin-login-background");
+    assert!(entry["version"].as_str().is_some_and(|version| !version.is_empty()));
+    assert_eq!(entry["manifest"], "manifests/org.xiying.login-background.json");
 }

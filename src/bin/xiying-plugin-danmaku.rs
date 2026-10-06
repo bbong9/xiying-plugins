@@ -1,7 +1,7 @@
 use std::{fmt, path::PathBuf};
 
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
-use luxd::application::{
+use xiyingd::application::{
     danmaku::{validate_danmaku_xml, validate_provider_base_url},
     media_matching::{MediaKind, normalize_title, parse_media_name},
     plugin_protocol::{
@@ -13,7 +13,7 @@ use reqwest::{Client, StatusCode, Url};
 use serde_json::{Value, json};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter};
 
-const PLUGIN_ID: &str = "org.lux.danmaku";
+const PLUGIN_ID: &str = "org.xiying.danmaku";
 const PLUGIN_NAME: &str = "弹幕匹配";
 const MAX_RPC_XML_BYTES: usize = 3 * 1024 * 1024;
 const MAX_PROVIDER_RESPONSE_BYTES: usize = 4 * 1024 * 1024;
@@ -31,7 +31,7 @@ impl DanmakuProviderClient {
             .map_err(|_| DanmakuProviderError::InvalidProviderUrl)?
             .normalized()
             .to_owned();
-        let builder = luxd::network::client_builder_from_env_or(proxy_url)
+        let builder = xiyingd::network::client_builder_from_env_or(proxy_url)
             .map_err(|_| DanmakuProviderError::InvalidProxy)?;
         let client = builder
             .timeout(PROVIDER_TIMEOUT)

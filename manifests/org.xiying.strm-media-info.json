@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "id": "org.lux.strm-media-info",
+  "id": "org.xiying.strm-media-info",
   "name": "strm媒体信息提取",
   "description": "使用 ffprobe 提取媒体信息，并使用 ffmpeg 补全 STRM 缩略图。",
   "version": "__VERSION__",

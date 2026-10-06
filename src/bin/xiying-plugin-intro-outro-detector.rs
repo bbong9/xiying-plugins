@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
-use luxd::application::plugin_protocol::{
+use xiyingd::application::plugin_protocol::{
     CHAPTER_DETECT_CAPABILITY, CHAPTER_DETECT_METHOD, ChapterDetectMarkerType,
     ChapterDetectRpcMarker, ChapterDetectRpcRequest, ChapterDetectRpcResult, PluginRequest,
     PluginResponse, PluginRpcError,
@@ -9,7 +9,7 @@ use luxd::application::plugin_protocol::{
 use serde_json::{Value, json};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
-const PLUGIN_ID: &str = "org.lux.intro-outro-detector";
+const PLUGIN_ID: &str = "org.xiying.intro-outro-detector";
 const PLUGIN_NAME: &str = "Intro/outro detector";
 const SAMPLE_RATE: u32 = 11_025;
 const MAX_FINGERPRINT_BYTES: usize = 384 * 1024;
@@ -603,7 +603,7 @@ fn invalid_output() -> PluginRpcError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use luxd::application::plugin_protocol::ChapterFingerprintRpcEpisode;
+    use xiyingd::application::plugin_protocol::ChapterFingerprintRpcEpisode;
 
     fn raw_points(values: Vec<u8>) -> Vec<u8> {
         values

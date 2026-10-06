@@ -1,6 +1,6 @@
 use std::{env, fmt, io, path::PathBuf, time::Duration};
 
-use luxd::{
+use xiyingd::{
     application::{
         plugin_protocol::{
             LOGIN_BACKGROUND_CUSTOM_IMAGE_PATH, LOGIN_BACKGROUND_GET_CAPABILITY,
@@ -19,7 +19,7 @@ use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
 };
 
-const PLUGIN_ID: &str = "org.lux.login-background";
+const PLUGIN_ID: &str = "org.xiying.login-background";
 const PLUGIN_NAME: &str = "统一登录背景";
 const BING_BASE_URL: &str = "https://www.bing.com";
 const BING_ARCHIVE_URL: &str = "https://www.bing.com/HPImageArchive.aspx";
@@ -493,7 +493,7 @@ fn clean_text(value: &str, max_characters: usize) -> Option<String> {
 mod tests {
     use std::time::Duration;
 
-    use luxd::application::{
+    use xiyingd::application::{
         plugin_protocol::{LoginBackgroundContentKind, PluginManifest},
         tmdb::{TmdbClient, TmdbClientConfig},
     };
@@ -651,12 +651,12 @@ mod tests {
     #[test]
     fn manifest_declares_only_one_unified_provider_and_host_managed_image() {
         let mut value: Value = serde_json::from_str(include_str!(
-            "../../manifests/org.lux.login-background.json"
+            "../../manifests/org.xiying.login-background.json"
         ))
         .expect("manifest should parse");
         value["version"] = json!("0.1.0");
         let manifest = PluginManifest::from_value(value).expect("manifest should satisfy SDK");
-        assert_eq!(manifest.id, "org.lux.login-background");
+        assert_eq!(manifest.id, "org.xiying.login-background");
         assert_eq!(manifest.plugin_type, "login_background");
         assert_eq!(manifest.permissions.filesystem, Vec::<String>::new());
         assert_eq!(
@@ -740,7 +740,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn tmdb_uses_only_trending_all_day_and_embedded_fallback_credential() {
+    async fn tmdb_uses_only_trending_all_day_and_configured_credential() {
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
             .await
             .expect("mock server should bind");
@@ -770,15 +770,16 @@ mod tests {
                 .expect("response should write");
             String::from_utf8(request).expect("request should be valid HTTP text")
         });
-        let client = TmdbClient::new_with_embedded_fallback(TmdbClientConfig {
+        let client = TmdbClient::new(TmdbClientConfig {
             base_url: format!("http://{address}/"),
+            api_key: Some("test-api-key".to_owned()),
             timeout: Duration::from_secs(2),
             follow_redirects: false,
             max_retries: 0,
             requests_per_second: 32,
             ..TmdbClientConfig::default()
         })
-        .expect("mock client should use embedded fallback credential");
+        .expect("mock client should use the test credential");
 
         let result = super::fetch_tmdb_daily_backdrop(&client)
             .await
@@ -826,8 +827,8 @@ mod tests {
         });
         let mut config = super::tmdb_client_config(None);
         config.base_url = format!("http://{address}/");
-        let client = TmdbClient::new_with_embedded_fallback(config)
-            .expect("mock client should use embedded fallback credential");
+        config.api_key = Some("test-api-key".to_owned());
+        let client = TmdbClient::new(config).expect("mock client should use the test credential");
 
         let result = super::fetch_tmdb_daily_backdrop(&client).await;
         let (request, redirected) = server.await.expect("mock server should finish");

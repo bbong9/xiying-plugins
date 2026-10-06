@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
-  "id": "org.lux.login-background",
+  "id": "org.xiying.login-background",
   "name": "统一登录背景",
-  "description": "在必应每日图片、TMDb 日榜横幅与单张自定义图片之间选择 Lux 登录页背景。",
+  "description": "在必应每日图片、TMDb 日榜横幅与单张自定义图片之间选择 汐影登录页背景。",
   "version": "__VERSION__",
   "apiVersion": 1,
   "runtime": {"kind": "process", "entrypoint": "__ENTRYPOINT__"},

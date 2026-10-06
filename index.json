@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
-  "name": "Lux Plugins",
-  "description": "Lux 官方插件目录",
+  "name": "汐影插件商店",
+  "description": "汐影插件目录",
   "plugins": [
     {
       "id": "org.lux.danmaku",

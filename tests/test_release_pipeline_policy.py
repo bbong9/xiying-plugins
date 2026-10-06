@@ -175,7 +175,7 @@ class ReleasePipelinePolicyTests(unittest.TestCase):
                 "capabilities": [],
                 "files": [],
             }))
-            binary = temporary / "lux-plugin-example"
+            binary = temporary / "xiying-plugin-example"
             binary.write_bytes(b"stable binary payload")
             outputs = [temporary / "first.zip", temporary / "second.zip"]
 

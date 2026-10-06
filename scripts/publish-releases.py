@@ -84,7 +84,7 @@ def main() -> None:
                     "--target",
                     args.target,
                     "--title",
-                    f"Lux plugin {plugin_id}",
+                    f"汐影插件 {plugin_id}",
                     "--notes",
                     f"Automated package release for {plugin_id}.",
                 ]

@@ -1,4 +1,4 @@
-use luxd::application::plugin_protocol::{
+use xiyingd::application::plugin_protocol::{
     LOGIN_BACKGROUND_CUSTOM_IMAGE_PATH, LoginBackgroundRpcResult, PluginManifest,
     UNIFIED_LOGIN_BACKGROUND_PLUGIN_ID,
 };
@@ -32,7 +32,7 @@ fn external_plugin_sdk_deserializes_and_reserializes_v1_result_fixtures() {
 #[test]
 fn unified_custom_image_manifest_uses_the_host_reserved_same_origin_image_field() {
     let mut manifest_value: serde_json::Value =
-        serde_json::from_str(include_str!("../manifests/org.lux.login-background.json"))
+        serde_json::from_str(include_str!("../manifests/org.xiying.login-background.json"))
             .expect("unified manifest should parse");
     manifest_value["version"] = serde_json::json!("0.1.0");
     let manifest = PluginManifest::from_value(manifest_value.clone())
