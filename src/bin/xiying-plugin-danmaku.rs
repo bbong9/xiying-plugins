@@ -1,6 +1,9 @@
 use std::{fmt, path::PathBuf};
 
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use reqwest::{Client, StatusCode, Url};
+use serde_json::{Value, json};
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter};
 use xiyingd::application::{
     danmaku::{validate_danmaku_xml, validate_provider_base_url},
     media_matching::{MediaKind, normalize_title, parse_media_name},
@@ -9,9 +12,6 @@ use xiyingd::application::{
         PluginRequest, PluginResponse, PluginRpcError,
     },
 };
-use reqwest::{Client, StatusCode, Url};
-use serde_json::{Value, json};
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter};
 
 const PLUGIN_ID: &str = "org.xiying.danmaku";
 const PLUGIN_NAME: &str = "弹幕匹配";

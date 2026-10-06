@@ -6,6 +6,10 @@ use std::{
     time::{Duration, Instant},
 };
 
+use reqwest::Url;
+use serde::Deserialize;
+use serde_json::{Value, json};
+use tokio::sync::{Mutex, OnceCell};
 use xiyingd::application::{
     douban::{
         DoubanClient, DoubanClientConfig, DoubanCredit, DoubanSearchResponse, DoubanSubject,
@@ -14,10 +18,6 @@ use xiyingd::application::{
     media_matching::{MediaKind, parse_media_name, title_candidates},
     plugin_protocol::{PluginRequest, PluginResponse, PluginRpcError},
 };
-use reqwest::Url;
-use serde::Deserialize;
-use serde_json::{Value, json};
-use tokio::sync::{Mutex, OnceCell};
 
 const PLUGIN_ID: &str = "org.xiying.douban";
 const PLUGIN_NAME: &str = "豆瓣元数据插件";
@@ -785,7 +785,9 @@ mod tests {
             plugin_config_path(Some(PathBuf::from(
                 "/config/plugin-config/org.xiying.douban.json",
             ))),
-            Some(PathBuf::from("/config/plugin-config/org.xiying.douban.json"))
+            Some(PathBuf::from(
+                "/config/plugin-config/org.xiying.douban.json"
+            ))
         );
         assert_eq!(plugin_config_path(None), None);
     }

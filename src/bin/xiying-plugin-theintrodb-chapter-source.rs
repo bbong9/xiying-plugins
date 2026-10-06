@@ -1,13 +1,5 @@
 use std::{collections::HashMap, env, io, path::PathBuf, time::Duration};
 
-use xiyingd::{
-    application::plugin_protocol::{
-        CHAPTER_LOOKUP_CAPABILITY, CHAPTER_LOOKUP_METHOD, ChapterDetectMarkerType,
-        ChapterDetectRpcMarker, ChapterLookupRpcEpisode, ChapterLookupRpcRequest,
-        ChapterLookupRpcResult, PluginRequest, PluginResponse, PluginRpcError,
-    },
-    network::client_builder_from_env,
-};
 use reqwest::{Client, StatusCode, Url};
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -15,6 +7,14 @@ use tokio::{
     fs,
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     time::sleep,
+};
+use xiyingd::{
+    application::plugin_protocol::{
+        CHAPTER_LOOKUP_CAPABILITY, CHAPTER_LOOKUP_METHOD, ChapterDetectMarkerType,
+        ChapterDetectRpcMarker, ChapterLookupRpcEpisode, ChapterLookupRpcRequest,
+        ChapterLookupRpcResult, PluginRequest, PluginResponse, PluginRpcError,
+    },
+    network::client_builder_from_env,
 };
 
 const PLUGIN_ID: &str = "org.xiying.theintrodb-chapter-source";

@@ -6,12 +6,12 @@ use ip_location_plugin::{
     invalid_ip, invalid_response, is_public_ip, read_limited_body, text_field, upstream_error,
     value_as_i64,
 };
-use xiyingd::application::plugin_protocol::{
-    IP_LOCATION_CAPABILITY, IpLocationRpcRequest, IpLocationRpcResult, PluginRpcError,
-};
 use md5::{Digest, Md5};
 use rand_core::{OsRng, RngCore};
 use serde_json::{Value, json};
+use xiyingd::application::plugin_protocol::{
+    IP_LOCATION_CAPABILITY, IpLocationRpcRequest, IpLocationRpcResult, PluginRpcError,
+};
 
 const PLUGIN_ID: &str = "org.xiying.ip-hiofd";
 const PLUGIN_NAME: &str = "IP归属地查询增强";

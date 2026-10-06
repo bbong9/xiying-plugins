@@ -1,5 +1,5 @@
-use xiyingd::application::plugin_protocol::PluginManifest;
 use serde_json::Value;
+use xiyingd::application::plugin_protocol::PluginManifest;
 
 #[test]
 fn strm_media_info_manifest_declares_the_mediatidy_probe_route() {

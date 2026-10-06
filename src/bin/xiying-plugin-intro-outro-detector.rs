@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use serde_json::{Value, json};
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use xiyingd::application::plugin_protocol::{
     CHAPTER_DETECT_CAPABILITY, CHAPTER_DETECT_METHOD, ChapterDetectMarkerType,
     ChapterDetectRpcMarker, ChapterDetectRpcRequest, ChapterDetectRpcResult, PluginRequest,
     PluginResponse, PluginRpcError,
 };
-use serde_json::{Value, json};
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
 const PLUGIN_ID: &str = "org.xiying.intro-outro-detector";
 const PLUGIN_NAME: &str = "Intro/outro detector";

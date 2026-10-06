@@ -4,10 +4,6 @@ use std::{
 };
 
 use hmac::{Hmac, Mac};
-use xiyingd::application::plugin_protocol::{
-    NOTIFICATION_SEND_CAPABILITY, NOTIFICATION_SEND_METHOD, NotificationSendRpcResult,
-    NotificationSendStatus, PluginRequest, PluginResponse, PluginRpcError,
-};
 use reqwest::{Client, StatusCode, Url, redirect::Policy};
 use serde::Deserialize;
 use serde_json::{Map, Value, json};
@@ -15,6 +11,10 @@ use sha2::Sha256;
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::lookup_host,
+};
+use xiyingd::application::plugin_protocol::{
+    NOTIFICATION_SEND_CAPABILITY, NOTIFICATION_SEND_METHOD, NotificationSendRpcResult,
+    NotificationSendStatus, PluginRequest, PluginResponse, PluginRpcError,
 };
 
 const PLUGIN_ID: &str = "org.xiying.webhook";

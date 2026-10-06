@@ -5,10 +5,10 @@ use std::time::Duration;
 use ip_location_plugin::{
     invalid_ip, invalid_response, is_public_ip, read_limited_body, upstream_error,
 };
+use serde_json::{Value, json};
 use xiyingd::application::plugin_protocol::{
     IP_LOCATION_CAPABILITY, IpLocationRpcRequest, IpLocationRpcResult, PluginRpcError,
 };
-use serde_json::{Value, json};
 
 const PLUGIN_ID: &str = "org.xiying.qoo-ip138";
 const PLUGIN_NAME: &str = "ip138 IP归属地查询";

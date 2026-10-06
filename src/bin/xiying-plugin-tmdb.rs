@@ -6,6 +6,13 @@ use std::{
     time::{Duration, Instant},
 };
 
+use serde::Deserialize;
+use serde_json::{Value, json};
+use tokio::{
+    io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
+    sync::{Mutex, Notify, OnceCell, Semaphore},
+    task::JoinSet,
+};
 use xiyingd::application::{
     media_matching::{MediaKind, parse_media_name, title_candidates},
     plugin_protocol::{PluginRequest, PluginResponse, PluginRpcError},
@@ -21,13 +28,6 @@ use xiyingd::application::{
         TmdbSeasonDetails, TmdbSeriesDetails, TmdbTranslation, TmdbTranslationData,
         TmdbTranslationsResponse, TmdbTvSearchResponse, TmdbVideosResponse, fill_if_empty,
     },
-};
-use serde::Deserialize;
-use serde_json::{Value, json};
-use tokio::{
-    io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
-    sync::{Mutex, Notify, OnceCell, Semaphore},
-    task::JoinSet,
 };
 
 static CLIENT: OnceCell<Result<TmdbClient, String>> = OnceCell::const_new();
@@ -496,7 +496,9 @@ async fn search_tv(
     completed_search(last_response)
 }
 
-fn completed_search<T>(last_response: Option<T>) -> Result<T, xiyingd::application::tmdb::TmdbError> {
+fn completed_search<T>(
+    last_response: Option<T>,
+) -> Result<T, xiyingd::application::tmdb::TmdbError> {
     last_response.ok_or(xiyingd::application::tmdb::TmdbError::NotFound)
 }
 

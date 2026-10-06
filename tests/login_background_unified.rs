@@ -2,9 +2,10 @@ use xiyingd::application::plugin_protocol::PluginManifest;
 
 #[test]
 fn unified_manifest_keeps_provider_consents_separate_and_image_host_managed() {
-    let mut value: serde_json::Value =
-        serde_json::from_str(include_str!("../manifests/org.xiying.login-background.json"))
-            .expect("unified login background manifest should parse");
+    let mut value: serde_json::Value = serde_json::from_str(include_str!(
+        "../manifests/org.xiying.login-background.json"
+    ))
+    .expect("unified login background manifest should parse");
     value["version"] = serde_json::json!("0.1.0");
     let manifest = PluginManifest::from_value(value).expect("manifest should satisfy the SDK");
 
@@ -58,6 +59,13 @@ fn official_catalog_contains_only_the_unified_background_provider() {
         .find(|plugin| plugin["id"] == "org.xiying.login-background")
         .expect("unified provider should be registered");
     assert_eq!(entry["binary"], "xiying-plugin-login-background");
-    assert!(entry["version"].as_str().is_some_and(|version| !version.is_empty()));
-    assert_eq!(entry["manifest"], "manifests/org.xiying.login-background.json");
+    assert!(
+        entry["version"]
+            .as_str()
+            .is_some_and(|version| !version.is_empty())
+    );
+    assert_eq!(
+        entry["manifest"],
+        "manifests/org.xiying.login-background.json"
+    );
 }

@@ -1,5 +1,12 @@
 use std::{env, fmt, io, path::PathBuf, time::Duration};
 
+use reqwest::{Client, StatusCode, Url, redirect::Policy};
+use serde::Deserialize;
+use serde_json::{Value, json};
+use tokio::{
+    fs,
+    io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+};
 use xiyingd::{
     application::{
         plugin_protocol::{
@@ -10,13 +17,6 @@ use xiyingd::{
         tmdb::{TmdbClient, TmdbClientConfig},
     },
     network::{client_builder_from_env, proxy_url_from_env},
-};
-use reqwest::{Client, StatusCode, Url, redirect::Policy};
-use serde::Deserialize;
-use serde_json::{Value, json};
-use tokio::{
-    fs,
-    io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
 };
 
 const PLUGIN_ID: &str = "org.xiying.login-background";
@@ -493,13 +493,13 @@ fn clean_text(value: &str, max_characters: usize) -> Option<String> {
 mod tests {
     use std::time::Duration;
 
+    use reqwest::Client;
+    use serde_json::{Value, json};
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
     use xiyingd::application::{
         plugin_protocol::{LoginBackgroundContentKind, PluginManifest},
         tmdb::{TmdbClient, TmdbClientConfig},
     };
-    use reqwest::Client;
-    use serde_json::{Value, json};
-    use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
     use super::{
         LoginBackgroundSource, PluginConfig, UnifiedBackgroundError, bing_login_background_result,

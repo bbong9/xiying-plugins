@@ -1,8 +1,8 @@
 use std::future::Future;
 
-use xiyingd::application::plugin_protocol::{PluginRequest, PluginResponse, PluginRpcError};
 use serde_json::Value;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use xiyingd::application::plugin_protocol::{PluginRequest, PluginResponse, PluginRpcError};
 
 pub async fn run<F, Fut>(handler: F) -> Result<(), Box<dyn std::error::Error + Send + Sync>>
 where
