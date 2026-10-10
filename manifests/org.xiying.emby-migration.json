@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "id": "org.xiying.emby-migration",
   "name": "Emby 迁移助手",
-  "description": "从 Emby 迁移用户资料、媒体状态、播放位置、次数、最近播放时间和收藏；仅支持 Emby 到 Lux。",
+  "description": "从 Emby 迁移用户资料、媒体状态、播放位置、次数、最近播放时间和收藏；补全演员表、头像、媒体信息和合集；元数据只读复制。",
   "version": "__VERSION__",
   "apiVersion": 1,
   "runtime": {"kind": "process", "entrypoint": "__ENTRYPOINT__"},

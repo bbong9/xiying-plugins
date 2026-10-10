@@ -1,3 +1,5 @@
+mod metadata;
+pub use metadata::{collection_image, collections, item_metadata, person_image};
 use std::{
     collections::{BTreeMap, HashSet},
     fmt,
@@ -179,6 +181,8 @@ pub struct ConnectionInfo {
     pub server_id: Option<String>,
     pub history_capability: HistoryCapability,
     pub supports_filtered_reads: bool,
+    pub supports_metadata_migration: bool,
+    pub library_folders: Vec<MigratableLibraryFolder>,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -716,6 +720,8 @@ pub async fn test_connection(params: Value) -> Result<Value, PluginRpcError> {
         server_id: authenticated.server_id.or(public.server_id),
         history_capability: HistoryCapability::ItemState,
         supports_filtered_reads: true,
+        supports_metadata_migration: true,
+        library_folders: Vec::new(),
     };
     serde_json::to_value(info).map_err(|_| invalid_response())
 }

@@ -1,5 +1,7 @@
 use serde_json::{Value, json};
+use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio::{sync::Mutex, task::JoinSet};
 use xiyingd::application::{
     emby_migration,
     plugin_protocol::{
@@ -15,20 +17,34 @@ const PLUGIN_NAME: &str = "Emby 迁移助手";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut lines = BufReader::new(tokio::io::stdin()).lines();
-    let mut output = tokio::io::stdout();
+    let output = Arc::new(Mutex::new(tokio::io::stdout()));
+    let mut jobs = JoinSet::new();
     while let Some(line) = lines.next_line().await? {
-        let response = match serde_json::from_str::<PluginRequest>(&line) {
-            Ok(request) => handle_request(request).await,
-            Err(_) => PluginResponse {
-                id: "invalid-request".to_owned(),
-                result: None,
-                error: Some(invalid_request()),
-            },
-        };
-        let mut serialized = serde_json::to_vec(&response)?;
-        serialized.push(b'\n');
-        output.write_all(&serialized).await?;
-        output.flush().await?;
+        if jobs.len() >= 8 {
+            if let Some(result) = jobs.join_next().await {
+                result??;
+            }
+        }
+        let output = Arc::clone(&output);
+        jobs.spawn(async move {
+            let response = match serde_json::from_str::<PluginRequest>(&line) {
+                Ok(request) => handle_request(request).await,
+                Err(_) => PluginResponse {
+                    id: "invalid-request".to_owned(),
+                    result: None,
+                    error: Some(invalid_request()),
+                },
+            };
+            let mut serialized = serde_json::to_vec(&response)?;
+            serialized.push(b'\n');
+            let mut output = output.lock().await;
+            output.write_all(&serialized).await?;
+            output.flush().await?;
+            Ok::<_, Box<dyn std::error::Error + Send + Sync>>(())
+        });
+    }
+    while let Some(result) = jobs.join_next().await {
+        result??;
     }
     Ok(())
 }
@@ -58,14 +74,20 @@ async fn handle_method(method: &str, params: Value) -> Result<Value, PluginRpcEr
             "capabilities": [EMBY_MIGRATION_CAPABILITY],
             "supportedItemTypes": ["Movie", "Series", "Season", "Episode", "Person"],
             "historyCapability": "ITEM_STATE",
-            "supportsFilteredReads": true
+            "supportsFilteredReads": true,
+            "supportsMetadataMigration": true
         })),
         "plugin.health" => Ok(json!({
             "available": true,
             "configured": true,
             "historyCapability": "ITEM_STATE",
-            "supportsFilteredReads": true
+            "supportsFilteredReads": true,
+            "supportsMetadataMigration": true
         })),
+        "migration.item_metadata" => emby_migration::item_metadata(params).await,
+        "migration.person_image" => emby_migration::person_image(params).await,
+        "migration.collections" => emby_migration::collections(params).await,
+        "migration.collection_image" => emby_migration::collection_image(params).await,
         MIGRATION_TEST_METHOD => emby_migration::test_connection(params).await,
         MIGRATION_LIST_USERS_METHOD => emby_migration::list_users(params).await,
         MIGRATION_LIST_ITEMS_METHOD => emby_migration::list_items(params).await,
