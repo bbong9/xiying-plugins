@@ -1,4 +1,5 @@
 use serde_json::{Value, json};
+use std::sync::{Arc, Mutex};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpListener,
@@ -9,6 +10,18 @@ async fn fixture<F>(handler: F) -> (Value, tokio::task::JoinHandle<()>)
 where
     F: Fn(&str) -> (u16, String, String) + Send + Sync + 'static,
 {
+    let (source, server, _) = observed_fixture(handler).await;
+    (source, server)
+}
+
+type Requests = Arc<Mutex<Vec<String>>>;
+
+async fn observed_fixture<F>(handler: F) -> (Value, tokio::task::JoinHandle<()>, Requests)
+where
+    F: Fn(&str) -> (u16, String, String) + Send + Sync + 'static,
+{
+    let requests: Requests = Arc::new(Mutex::new(Vec::new()));
+    let observed = Arc::clone(&requests);
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let addr = listener.local_addr().unwrap();
     let task = tokio::spawn(async move {
@@ -28,7 +41,21 @@ where
             }
             let request = String::from_utf8(request).unwrap();
             assert!(request.starts_with("GET "), "metadata is GET-only");
-            let (status, content_type, body) = handler(&request);
+            observed
+                .lock()
+                .unwrap()
+                .push(request.lines().next().unwrap().to_owned());
+            let url = request_url(&request);
+            let unsupported_item = url
+                .path()
+                .strip_prefix("/Items/")
+                .is_some_and(|id| !id.is_empty() && id.bytes().all(|byte| byte.is_ascii_digit()));
+            // Emby 4.11 does not expose GET /Items/{Id}; image subroutes remain valid.
+            let (status, content_type, body) = if unsupported_item {
+                (404, "application/json".into(), "{}".into())
+            } else {
+                handler(&request)
+            };
             let response = format!(
                 "HTTP/1.1 {status} OK\r\nContent-Type: {content_type}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
                 body.len()
@@ -39,15 +66,31 @@ where
     (
         json!({"baseUrl":format!("http://{addr}/"),"apiKey":"fixture-only-not-a-real-key","allowPrivateNetwork":true}),
         task,
+        requests,
     )
+}
+
+fn request_url(request: &str) -> reqwest::Url {
+    reqwest::Url::parse(&format!(
+        "http://fixture{}",
+        request.split_whitespace().nth(1).unwrap()
+    ))
+    .unwrap()
+}
+
+fn batch_ids(request: &str) -> Option<Vec<String>> {
+    request_url(request)
+        .query_pairs()
+        .find(|(name, _)| name == "Ids")
+        .map(|(_, ids)| ids.split(',').map(str::to_owned).collect())
 }
 #[tokio::test]
 async fn card21_metadata_paginates_and_projects_people_streams_without_urls() {
     let (source,server)=fixture(|request|{
-        let body=if request.starts_with("GET /Items/p1?") {json!({"ProviderIds":{"Tmdb":"12"},"ImageTags":{"Primary":"tag"}})} else {
+        let body=if batch_ids(request).is_some() {json!({"Items":[{"Id":"101","ProviderIds":{"Tmdb":"12"},"ImageTags":{"Primary":"tag"}}]})} else {
             assert!(request.contains("IncludeItemTypes=Movie%2CSeries%2CSeason%2CEpisode"));assert!(request.contains("ParentId=lib1"));assert!(request.contains("StartIndex=5"));
             json!({"TotalRecordCount":7,"Items":[{"Id":"m1","Name":"Film","Type":"Movie","Path":"/media/Films/a.strm","RunTimeTicks":72000000000i64,
-                "People":[{"Id":"p1","Name":"Actor","Type":"Actor","Role":"Lead"}],"MediaSources":[{"Id":"s1","Container":"mkv","MediaStreams":[{"Index":0,"Type":"Video","Codec":"hevc","Width":3840,"Height":2160}]}]}]})
+                "People":[{"Id":"101","Name":"Actor","Type":"Actor","Role":"Lead"}],"MediaSources":[{"Id":"s1","Container":"mkv","MediaStreams":[{"Index":0,"Type":"Video","Codec":"hevc","Width":3840,"Height":2160}]}]}]})
         };(200,"application/json".into(),body.to_string())
     }).await;
     let result = item_metadata(
@@ -241,5 +284,225 @@ async fn card22_virtual_folders_preserve_collection_type_get_only() {
         .await
         .unwrap();
     assert_eq!(discovery["libraryFolders"], page["libraryFolders"]);
+    server.abort();
+}
+
+fn people_page() -> Value {
+    json!({"TotalRecordCount":3,"Items":[
+        {"Id":"1","People":[{"Id":"101","Name":"A"},{"Id":"102","Name":"B"}]},
+        {"Id":"2","People":[{"Id":"102","Name":"B"},{"Id":"103","Name":"C"}]},
+        {"Id":"3","People":[{"Id":"104","Name":"D"},{"Id":"105","Name":"E","PrimaryImageTag":"from-item"}]}
+    ]})
+}
+
+fn person_details(ids: &[String]) -> Value {
+    json!({"Items":ids.iter().map(|id| json!({"Id":id,"ProviderIds":{"Tmdb":id}})).collect::<Vec<_>>()})
+}
+
+fn json_response(body: Value) -> (u16, String, String) {
+    (200, "application/json".into(), body.to_string())
+}
+
+#[tokio::test]
+async fn card22c_fixture_rejects_numeric_single_item_get() {
+    let (source, server) = fixture(|_| json_response(json!({}))).await;
+    let response = reqwest::get(format!(
+        "{}Items/12505?Fields=ProviderIds,ImageTags",
+        source["baseUrl"].as_str().unwrap()
+    ))
+    .await
+    .unwrap();
+    assert_eq!(response.status(), reqwest::StatusCode::NOT_FOUND);
+    server.abort();
+}
+
+#[tokio::test]
+async fn card22c_people_are_batched_once_per_page_and_cached() {
+    let (source, server, requests) = observed_fixture(|request| {
+        if let Some(ids) = batch_ids(request) {
+            assert!(
+                request_url(request)
+                    .query_pairs()
+                    .any(|(name, value)| name == "Fields" && value == "ProviderIds,ImageTags")
+            );
+            json_response(person_details(&ids))
+        } else {
+            json_response(people_page())
+        }
+    })
+    .await;
+    for _ in 0..2 {
+        let result = item_metadata(json!({"source":source.clone(),"limit":3}))
+            .await
+            .unwrap();
+        assert_eq!(result["items"].as_array().unwrap().len(), 3);
+        assert_eq!(
+            result["items"][0]["people"][0]["providerIds"]["Tmdb"],
+            "101"
+        );
+        assert_eq!(
+            result["items"][2]["people"][1]["providerIds"]["Tmdb"],
+            "105"
+        );
+    }
+    let requests = requests.lock().unwrap();
+    let batches = requests
+        .iter()
+        .filter_map(|request| batch_ids(request))
+        .collect::<Vec<_>>();
+    assert_eq!(batches, vec![vec!["101", "102", "103", "104", "105"]]);
+    assert!(
+        requests
+            .iter()
+            .all(|request| request_url(request).path() == "/Items")
+    );
+    server.abort();
+}
+
+#[tokio::test]
+async fn card22c_missing_person_keeps_page_and_item_image_hint() {
+    let (source, server, requests) = observed_fixture(|request| {
+        if let Some(ids) = batch_ids(request) {
+            json_response(person_details(
+                &ids.into_iter().filter(|id| id != "105").collect::<Vec<_>>(),
+            ))
+        } else {
+            json_response(people_page())
+        }
+    })
+    .await;
+    let result = item_metadata(json!({"source":source,"limit":3}))
+        .await
+        .unwrap();
+    assert_eq!(result["items"].as_array().unwrap().len(), 3);
+    assert_eq!(
+        result["items"][2]["people"][0]["providerIds"]["Tmdb"],
+        "104"
+    );
+    assert_eq!(result["items"][2]["people"][0]["hasPrimary"], false);
+    assert_eq!(result["items"][2]["people"][1]["providerIds"], json!({}));
+    assert_eq!(result["items"][2]["people"][1]["hasPrimary"], true);
+    assert_eq!(
+        requests
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|request| batch_ids(request).is_some())
+            .count(),
+        1
+    );
+    server.abort();
+}
+
+#[tokio::test]
+async fn card22c_batches_are_bounded_to_100_and_deduplicated() {
+    let (source, server, requests) = observed_fixture(|request| {
+        if let Some(ids) = batch_ids(request) {
+            assert!(ids.len() <= 100);
+            json_response(person_details(&ids))
+        } else {
+            let mut people = (1000..1205)
+                .map(|id| json!({"Id":id.to_string(),"Name":"Person"}))
+                .collect::<Vec<_>>();
+            people.push(people[0].clone());
+            json_response(json!({"Items":[{"Id":"1","People":people}],"TotalRecordCount":1}))
+        }
+    })
+    .await;
+    let result = item_metadata(json!({"source":source,"limit":1}))
+        .await
+        .unwrap();
+    assert_eq!(result["items"][0]["people"].as_array().unwrap().len(), 206);
+    assert_eq!(
+        result["items"][0]["people"][204]["providerIds"]["Tmdb"],
+        "1204"
+    );
+    let requests = requests.lock().unwrap();
+    let mut sizes = requests
+        .iter()
+        .filter_map(|request| batch_ids(request).map(|ids| ids.len()))
+        .collect::<Vec<_>>();
+    sizes.sort_unstable();
+    assert_eq!(sizes, vec![5, 100, 100]);
+    server.abort();
+}
+
+#[tokio::test]
+async fn card22c_identity_404_and_invalid_data_fall_back() {
+    for (status, body) in [
+        (404, "{}"),
+        (200, "not-json"),
+        (200, "{\"Items\":null}"),
+        (200, "{\"Items\":[null,{\"Id\":123}]}"),
+        (400, "{}"),
+    ] {
+        let (source, server) = fixture(move |request| {
+            if batch_ids(request).is_some() {
+                (status, "application/json".into(), body.into())
+            } else {
+                json_response(people_page())
+            }
+        })
+        .await;
+        let result = item_metadata(json!({"source":source,"limit":3}))
+            .await
+            .unwrap();
+        assert_eq!(result["items"].as_array().unwrap().len(), 3);
+        assert_eq!(result["items"][0]["people"][0]["providerIds"], json!({}));
+        assert_eq!(result["items"][0]["people"][0]["hasPrimary"], false);
+        assert_eq!(result["items"][2]["people"][1]["providerIds"], json!({}));
+        assert_eq!(result["items"][2]["people"][1]["hasPrimary"], true);
+        server.abort();
+    }
+}
+
+#[tokio::test]
+async fn card22c_batch_authentication_and_retryable_errors_propagate() {
+    for (status, code) in [
+        (401, "PLUGIN_AUTH_FAILED"),
+        (403, "PLUGIN_AUTH_FAILED"),
+        (429, "PLUGIN_RATE_LIMITED"),
+        (500, "PLUGIN_RATE_LIMITED"),
+        (503, "PLUGIN_RATE_LIMITED"),
+    ] {
+        let (source, server) = fixture(move |request| {
+            if batch_ids(request).is_some() {
+                (status, "application/json".into(), "{}".into())
+            } else {
+                json_response(people_page())
+            }
+        })
+        .await;
+        let error = item_metadata(json!({"source":source,"limit":3}))
+            .await
+            .unwrap_err();
+        assert_eq!(error.code, code, "HTTP {status}");
+        server.abort();
+    }
+}
+
+#[tokio::test]
+async fn card22c_invalid_person_id_is_never_requested() {
+    let (source, server, requests) = observed_fixture(|request| {
+        if let Some(ids) = batch_ids(request) { json_response(person_details(&ids)) }
+        else { json_response(json!({"Items":[{"Id":"1","People":[{"Id":"../bad?x=1","Name":"Invalid"},{"Id":"101","Name":"Valid"}]}],"TotalRecordCount":1})) }
+    }).await;
+    let result = item_metadata(json!({"source":source,"limit":1}))
+        .await
+        .unwrap();
+    assert_eq!(result["items"][0]["people"].as_array().unwrap().len(), 1);
+    assert_eq!(
+        result["items"][0]["people"][0]["providerIds"]["Tmdb"],
+        "101"
+    );
+    assert_eq!(
+        requests
+            .lock()
+            .unwrap()
+            .iter()
+            .filter_map(|request| batch_ids(request))
+            .collect::<Vec<_>>(),
+        vec![vec!["101"]]
+    );
     server.abort();
 }

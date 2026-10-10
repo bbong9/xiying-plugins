@@ -1,7 +1,7 @@
 //! Read-only, bounded Emby metadata transport. No direct provider/image requests.
 use super::*;
 use base64::{Engine as _, engine::general_purpose::STANDARD};
-use std::sync::Arc;
+use std::{collections::BTreeSet, sync::Arc};
 use tokio::sync::{OwnedSemaphorePermit, Semaphore};
 
 const MAX_PROFILE_BYTES: usize = 10 * 1024 * 1024;
@@ -65,46 +65,124 @@ fn identity(raw: &Value) -> Value {
         "seriesId":text(raw,"SeriesId"),"seasonId":text(raw,"SeasonId"),"indexNumber":raw.get("IndexNumber"),
         "parentIndexNumber":raw.get("ParentIndexNumber"),"userData":null})
 }
-async fn person(
-    client: EmbyClient,
+fn person_id(raw: &Value) -> Option<&str> {
+    validate_identifier(raw.get("Id")?.as_str()?).ok()
+}
+
+async fn read_people(
+    client: &EmbyClient,
+    identifiers: &[String],
+) -> Result<BTreeMap<String, Value>, PluginRpcError> {
+    // Negative entries prevent repeated lookups; image hints belong to each credit, not the cache.
+    let mut details = identifiers
+        .iter()
+        .map(|id| (id.clone(), Value::Null))
+        .collect::<BTreeMap<_, _>>();
+    let _permit = permit(false).await?;
+    let response = client
+        .get_json::<Value>(
+            "Items",
+            &[
+                ("Ids", identifiers.join(",")),
+                ("Fields", "ProviderIds,ImageTags".to_owned()),
+            ],
+        )
+        .await;
+    let raw = match response {
+        Ok(raw) => raw,
+        Err(error @ (MigrationError::Authentication | MigrationError::Retryable)) => {
+            return Err(to_rpc_error(error));
+        }
+        // Identity enrichment is optional. An unavailable/invalid person must not stop the page.
+        Err(_) => return Ok(details),
+    };
+    if let Some(items) = raw
+        .get("Items")
+        .and_then(Value::as_array)
+        .filter(|items| items.len() <= identifiers.len())
+    {
+        for item in items {
+            if let Some(slot) = person_id(item).and_then(|id| details.get_mut(id)) {
+                *slot = item.clone();
+            }
+        }
+    }
+    Ok(details)
+}
+
+async fn page_people(
+    client: &EmbyClient,
     key: EmbyClientCacheKey,
-    raw: Value,
-) -> Result<Value, PluginRpcError> {
-    let id = text(&raw, "Id").ok_or_else(invalid_response)?;
-    validate_identifier(&id).map_err(|_| invalid_response())?;
+    items: &[Value],
+) -> Result<BTreeMap<String, Value>, PluginRpcError> {
+    let mut identifiers = BTreeSet::new();
+    for item in items {
+        if let Some(people) = item.get("People").and_then(Value::as_array) {
+            if people.len() > 1000 {
+                return Err(invalid_response());
+            }
+            identifiers.extend(people.iter().filter_map(person_id).map(str::to_owned));
+        }
+    }
     let cache = PEOPLE.get_or_init(|| Mutex::new((None, BTreeMap::new())));
     let mut cached = cache.lock().await;
     if cached.0.as_ref() != Some(&key) {
         *cached = (Some(key.clone()), BTreeMap::new());
     }
-    let found = cached.1.get(&id).cloned();
+    let mut details = BTreeMap::new();
+    let mut missing = Vec::new();
+    for id in identifiers {
+        if let Some(detail) = cached.1.get(&id) {
+            details.insert(id, detail.clone());
+        } else {
+            missing.push(id);
+        }
+    }
     drop(cached);
-    let detail = if let Some(value) = found {
-        value
-    } else {
-        let _permit = permit(false).await?;
-        let value: Value = client
-            .get_json(
-                &format!("Items/{id}"),
-                &[("Fields", "ProviderIds,ImageTags".to_owned())],
-            )
-            .await
-            .map_err(to_rpc_error)?;
-        let mut cached = cache.lock().await;
-        if cached.0.as_ref() == Some(&key) {
-            if cached.1.len() >= 8192 {
+
+    let mut jobs = JoinSet::new();
+    let mut fetched = BTreeMap::new();
+    for batch in missing.chunks(100) {
+        let client = client.clone();
+        let batch = batch.to_vec();
+        jobs.spawn(async move { read_people(&client, &batch).await });
+        if jobs.len() >= MAX_USER_READ_CONCURRENCY {
+            fetched.extend(
+                jobs.join_next()
+                    .await
+                    .ok_or_else(invalid_response)?
+                    .map_err(|_| invalid_response())??,
+            );
+        }
+    }
+    while let Some(result) = jobs.join_next().await {
+        fetched.extend(result.map_err(|_| invalid_response())??);
+    }
+    let mut cached = cache.lock().await;
+    if cached.0.as_ref() == Some(&key) {
+        for (id, detail) in &fetched {
+            if cached.1.len() >= 8192 && !cached.1.contains_key(id) {
                 if let Some(first) = cached.1.keys().next().cloned() {
                     cached.1.remove(&first);
                 }
             }
-            cached.1.insert(id.clone(), value.clone());
+            cached.1.insert(id.clone(), detail.clone());
         }
-        value
-    };
-    Ok(
-        json!({"id":id,"name":text(&raw,"Name"),"role":text(&raw,"Role"),
-        "personType":text(&raw,"Type").unwrap_or_else(||"Actor".to_owned()),
-        "sortOrder":raw.get("SortOrder"),"providerIds":ids(&detail),
+    }
+    drop(cached);
+    // Keep this page's results even if a large page evicts entries from the bounded shared cache.
+    details.extend(fetched);
+    Ok(details)
+}
+
+fn person(raw: &Value, details: &BTreeMap<String, Value>) -> Option<Value> {
+    let id = person_id(raw)?;
+    let empty = Value::Null;
+    let detail = details.get(id).unwrap_or(&empty);
+    Some(
+        json!({"id":id,"name":text(raw,"Name"),"role":text(raw,"Role"),
+        "personType":text(raw,"Type").unwrap_or_else(||"Actor".to_owned()),
+        "sortOrder":raw.get("SortOrder"),"providerIds":ids(detail),
         "hasPrimary":raw.get("PrimaryImageTag").and_then(Value::as_str).is_some()
             || detail.pointer("/ImageTags/Primary").and_then(Value::as_str).is_some()}),
     )
@@ -192,35 +270,19 @@ pub async fn item_metadata(params: Value) -> Result<Value, PluginRpcError> {
     let raw=read_page(&client,&request,"Movie,Series,Season,Episode",
         "Path,ProviderIds,People,RunTimeTicks,MediaSources,MediaStreams,Container,Width,Height,ProductionYear,ParentId,SeriesId,SeasonId,IndexNumber,ParentIndexNumber").await?;
     let items = raw_items(&raw, request.limit)?;
+    let details = page_people(&client, key, items).await?;
     let mut output = Vec::with_capacity(items.len());
     for item in items {
-        let raw_people = item
+        let people = item
             .get("People")
             .and_then(Value::as_array)
-            .cloned()
+            .map(|people| {
+                people
+                    .iter()
+                    .filter_map(|raw| person(raw, &details))
+                    .collect::<Vec<_>>()
+            })
             .unwrap_or_default();
-        if raw_people.len() > 1000 {
-            return Err(invalid_response());
-        }
-        let mut jobs = JoinSet::new();
-        let mut people = Vec::new();
-        for (order, value) in raw_people.into_iter().enumerate() {
-            let client = client.clone();
-            let key = key.clone();
-            jobs.spawn(async move { person(client, key, value).await.map(|p| (order, p)) });
-            if jobs.len() >= 8 {
-                let (order, p) = jobs
-                    .join_next()
-                    .await
-                    .ok_or_else(invalid_response)?
-                    .map_err(|_| invalid_response())??;
-                people.push((order, p));
-            }
-        }
-        while let Some(value) = jobs.join_next().await {
-            people.push(value.map_err(|_| invalid_response())??);
-        }
-        people.sort_by_key(|(order, _)| *order);
         let mut sources = item
             .get("MediaSources")
             .and_then(Value::as_array)
@@ -229,8 +291,10 @@ pub async fn item_metadata(params: Value) -> Result<Value, PluginRpcError> {
         if sources.is_empty() {
             sources.push(source(item));
         }
-        output.push(json!({"item":identity(item),"path":text(item,"Path"),"people":people.into_iter().map(|(_,p)|p).collect::<Vec<_>>(),
-            "runtimeTicks":item.get("RunTimeTicks"),"sources":sources}));
+        output.push(
+            json!({"item":identity(item),"path":text(item,"Path"),"people":people,
+            "runtimeTicks":item.get("RunTimeTicks"),"sources":sources}),
+        );
     }
     Ok(page(
         output,

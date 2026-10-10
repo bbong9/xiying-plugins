@@ -30,6 +30,14 @@ or implements reverse migration. The current plugin reports `ITEM_STATE`; it doe
 timeline from aggregate UserData. When the host supplies `supportsFilteredReads` projections, it limits user IDs, user fields,
 state fields, and source library IDs before issuing Emby requests; legacy requests retain their previous complete-read behavior.
 
+Metadata migration resolves person provider IDs through `GET /Items?Ids=...&Fields=ProviderIds,ImageTags`,
+with at most 100 distinct, validated person IDs per request. It reuses the existing source-scoped 8192-entry
+cache and shared read concurrency limit. Missing people, 404 responses, and malformed identity data fall
+back to empty provider IDs; the credit's own `PrimaryImageTag` remains usable. Authentication failures
+(401/403) and retryable responses (429/5xx) still propagate. Invalid person IDs are skipped before requests;
+other credits and the media page remain available. This does not use the unsupported Emby 4.11
+`GET /Items/{Id}` route and does not change library discovery or write to Emby.
+
 ## Douban metadata
 
 `org.xiying.douban` (provider key `douban`) implements the Lux v1 metadata RPC contract for Douban. It supports Movie and
