@@ -203,6 +203,7 @@ pub struct MigratableUser {
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MigratableLibraryFolder {
+    pub collection_type: Option<String>,
     pub id: String,
     pub name: String,
     pub locations: Vec<String>,
@@ -435,6 +436,8 @@ struct RawUserPolicy {
 
 #[derive(Debug, Deserialize)]
 struct RawLibraryFolder {
+    #[serde(rename = "CollectionType", default)]
+    collection_type: Option<String>,
     #[serde(rename = "ItemId")]
     item_id: Option<String>,
     #[serde(rename = "Name")]
@@ -1087,6 +1090,7 @@ fn map_library_folder(
         Err(_) => return Some(Err(invalid_response())),
     };
     Some(Ok(MigratableLibraryFolder {
+        collection_type: folder.collection_type,
         id,
         name,
         locations: folder
@@ -1400,6 +1404,7 @@ mod response_tests {
     #[test]
     fn maps_virtual_folder_identity_and_locations() {
         let mapped = map_library_folder(RawLibraryFolder {
+            collection_type: None,
             item_id: Some("folder-1".to_owned()),
             name: "Movies".to_owned(),
             locations: vec!["/media/movies".to_owned()],
@@ -1412,6 +1417,7 @@ mod response_tests {
         assert_eq!(mapped.locations, vec!["/media/movies"]);
         assert!(
             map_library_folder(RawLibraryFolder {
+                collection_type: None,
                 item_id: None,
                 name: "Incomplete".to_owned(),
                 locations: Vec::new(),

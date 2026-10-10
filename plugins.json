@@ -8,6 +8,6 @@
   {"id": "org.xiying.intro-outro-detector", "binary": "xiying-plugin-intro-outro-detector", "version": "0.1.5", "manifest": "manifests/org.xiying.intro-outro-detector.json"},
   {"id": "org.xiying.theintrodb-chapter-source", "binary": "xiying-plugin-theintrodb-chapter-source", "version": "0.1.3", "manifest": "manifests/org.xiying.theintrodb-chapter-source.json"},
   {"id": "org.xiying.webhook", "binary": "xiying-plugin-webhook", "version": "0.1.5", "manifest": "manifests/org.xiying.webhook.json"},
-  {"id": "org.xiying.emby-migration", "binary": "xiying-plugin-emby-migration", "version": "0.1.8", "manifest": "manifests/org.xiying.emby-migration.json"},
+  {"id": "org.xiying.emby-migration", "binary": "xiying-plugin-emby-migration", "version": "0.1.9", "manifest": "manifests/org.xiying.emby-migration.json"},
   {"id": "org.xiying.danmaku", "binary": "xiying-plugin-danmaku", "version": "0.1.5", "manifest": "manifests/org.xiying.danmaku.json"}
 ]

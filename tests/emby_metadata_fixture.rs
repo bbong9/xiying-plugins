@@ -214,3 +214,32 @@ async fn card21_jsonl_process_really_has_four_concurrent_image_gets() {
     assert!(child.wait().await.unwrap().success());
     server.await.unwrap();
 }
+
+#[tokio::test]
+async fn card22_virtual_folders_preserve_collection_type_get_only() {
+    let (source, server) = fixture(|request| {
+        let body = if request.starts_with("GET /Library/VirtualFolders") {
+            json!([
+                {"ItemId":"movies","Name":"Movies","Locations":["/media/Films"],"CollectionType":"movies"},
+                {"ItemId":"series","Name":"Series","Locations":["/media/TV"],"CollectionType":"tvshows"},
+                {"ItemId":"boxes","Name":"Collections","Locations":[],"CollectionType":"boxsets"},
+                {"ItemId":"unknown","Name":"Other","Locations":[],"CollectionType":"FutureType"},
+                {"ItemId":"empty","Name":"Mixed","Locations":[]}
+            ])
+        } else { json!([]) };
+        (200, "application/json".into(), body.to_string())
+    }).await;
+    let page = xiyingd::application::emby_migration::list_users(json!({"source":source.clone()}))
+        .await
+        .unwrap();
+    assert_eq!(page["libraryFolders"][0]["collectionType"], "movies");
+    assert_eq!(page["libraryFolders"][1]["collectionType"], "tvshows");
+    assert_eq!(page["libraryFolders"][2]["collectionType"], "boxsets");
+    assert_eq!(page["libraryFolders"][3]["collectionType"], "FutureType");
+    assert!(page["libraryFolders"][4]["collectionType"].is_null());
+    let discovery = item_metadata(json!({"source":source,"discoveryOnly":true}))
+        .await
+        .unwrap();
+    assert_eq!(discovery["libraryFolders"], page["libraryFolders"]);
+    server.abort();
+}

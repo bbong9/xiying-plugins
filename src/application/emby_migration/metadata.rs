@@ -7,8 +7,8 @@ use tokio::sync::{OwnedSemaphorePermit, Semaphore};
 const MAX_PROFILE_BYTES: usize = 10 * 1024 * 1024;
 static READS: OnceLock<Arc<Semaphore>> = OnceLock::new();
 static IMAGES: OnceLock<Arc<Semaphore>> = OnceLock::new();
-static PEOPLE: OnceLock<Mutex<(Option<EmbyClientCacheKey>, BTreeMap<String, Value>)>> =
-    OnceLock::new();
+type PeopleCache = (Option<EmbyClientCacheKey>, BTreeMap<String, Value>);
+static PEOPLE: OnceLock<Mutex<PeopleCache>> = OnceLock::new();
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
