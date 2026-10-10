@@ -70,7 +70,7 @@
       "name": "Emby 迁移助手",
       "description": "从 Emby 迁移用户资料、媒体状态、播放位置、次数、最近播放时间和收藏；补全演员表、头像、媒体信息和合集；元数据只读复制。",
       "category": "MIGRATION",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "runtime": "process",
       "providerKey": null,
       "aliases": [],
@@ -81,14 +81,14 @@
         {
           "platform": "linux",
           "arch": "aarch64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.emby-migration/org.xiying.emby-migration-0.1.8-linux-aarch64.zip",
-          "sha256": "004956e850005bc6c2c8372c89df8c40e805e2ba8587a2a168e6999d432949cd"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.emby-migration/org.xiying.emby-migration-0.1.9-linux-aarch64.zip",
+          "sha256": "09be98b3628f6c255bcf569bd0810c2a3a9c9df7bc6ef121339f1b2714672c01"
         },
         {
           "platform": "linux",
           "arch": "x86_64",
-          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.emby-migration/org.xiying.emby-migration-0.1.8-linux-x86_64.zip",
-          "sha256": "d74544147c74fe1243b7540c9ca41bc8158b9cb438493d9a37f4dec6aa3859bc"
+          "url": "https://github.com/bbong9/xiying-plugins/releases/download/org.xiying.emby-migration/org.xiying.emby-migration-0.1.9-linux-x86_64.zip",
+          "sha256": "a12ae441d21792b106bcad2a580fff02e7d4b3f44106c4b92c177490060c0ca7"
         }
       ]
     },
